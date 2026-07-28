@@ -1,0 +1,27 @@
+# 상수(constant)
+#   - 파이썬에서는 상수 형식이 따로 없으나, 상수처럼 사용하도록 변수의 값을 고정
+#   - 상수로 사용하는 이름은 대문자로 표기 - 변수와 구분하기 위해
+#   - 상수는 변경되지 않는 값
+
+PI = 3.141592
+TAX_RATE = 0.33
+
+# 문제1. 원의 면적 구하기
+# 원주율을 상수로 저장하고, 반지름 값을 변수로 주어서 원의 면적 구하기
+
+radius = 2
+c_area = PI * radius * radius
+print(c_area)
+
+# 문제2. 원리금 계산하기
+#   잔고(deposit)가 10만원인 경우 이자액과 이자가 더해진 잔고 계산
+
+INS_RATE = 0.03
+deposit = 1000000
+
+interest = deposit * INS_RATE
+deposit = deposit + interest
+print(f"이자 = {interest}, 잔고 = {deposit:1.1f}")
+print("이자 = %1.1f원, 잔고 = %d원"%(interest, deposit))
+print("이자 = " + str(interest) + ", 잔고 =" + str(deposit))
+print("이자 = {0:1.1f}, 잔고 = {1}".format(interest, deposit))
