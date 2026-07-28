@@ -21,7 +21,10 @@ deposit = 1000000
 
 interest = deposit * INS_RATE
 deposit = deposit + interest
+print("이자 = " + format(interest,",") + ", 잔고 =" + str(deposit))
+
 print(f"이자 = {interest}, 잔고 = {deposit:1.1f}")
 print("이자 = %1.1f원, 잔고 = %d원"%(interest, deposit))
 print("이자 = " + str(interest) + ", 잔고 =" + str(deposit))
+print("이자 = " + format(interest) + ", 잔고 =" + str(deposit))
 print("이자 = {0:1.1f}, 잔고 = {1}".format(interest, deposit))
