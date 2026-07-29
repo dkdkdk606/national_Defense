@@ -34,7 +34,7 @@ print(f'10000초는 {10000//60}분 {10000%60}초 입니다.')
 # 연습문제2. 74350원은 만원, 오천원, 천원, 오백원, 백원, 십원으로 
 MONEY = 74350
 Money_rest = MONEY
-print(f'74350원은 만원짜리 {Money_rest//10000}장, ', end="")
+print(f'{MONEY}원은 만원짜리 {Money_rest//10000}장, ', end="")
 Money_rest = Money_rest%10000 
 print(f'오천원짜리 {Money_rest//5000}장, ', end="")
 Money_rest = Money_rest%5000 
@@ -45,4 +45,16 @@ Money_rest = Money_rest%500
 print(f'백원짜리 {Money_rest//100}개, ', end="")
 Money_rest = Money_rest%100 
 print(f'십원짜리 {Money_rest//10}개, ', end="")
-print(f'입니다.')
+print(f'로 지불할 수 있습니다.')
+
+# 대입연산자 : = 과 산순연산자를 함께 사용
+'''
+    =   : a = 10
+    +=  : a += 10   =>  a = a + 10
+    -=  : a -= 10   =>  a =  a - 10
+    *=  : a *= 10   =>  a =  a * 10
+    /=  : a /= 10   =>  a =  a / 10
+    **= : a **= 10   =>  a =  a ** 10
+    %=  : a %= 10   =>  a =  a % 10
+    //= : a //= 10   =>  a =  a // 10
+'''

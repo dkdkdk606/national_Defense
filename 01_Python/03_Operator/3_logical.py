@@ -7,5 +7,6 @@
 '''
 
 a = 15
-print(a>15 and a <= 2)
+print(a>15 and a <= 20)
 print(a%3 == 0 or a%5 == 0)
+print( not(a==100) )
