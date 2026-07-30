@@ -15,5 +15,6 @@ for x in range(1,10):
 for x in range(1,10):
     for y in range(2,10):
         print(f'{y} x {x} = {y * x}', end="  ")
+        # print(f'{y} x {x} = {y * x}', end="\t") -> 텝으로 하면 좀 더 정렬 예쁘게 나옴
     print()
 

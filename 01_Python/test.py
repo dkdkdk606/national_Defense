@@ -1,15 +1,16 @@
-pos = 0
-neg = 0
-zero = 0
-for i in range(10):
-    j = int(input(f"숫자{i}입력 : "))
-    if j > 0:
-        pos += 1
-    elif j < 0:
-        neg += 1
-    else:
-        zero += 1
-print('--------------')
-print(f'양수: {pos}개')
-print(f'음수: {neg}개')
-print(f'0  : {zero}개')
+text = "파이썬재밌어요"
+new_text = ""
+
+for i in text[::2]:
+    new_text += f'{i}#'
+print(new_text[:len(text)])
+print(new_text[:-1])
+
+
+
+i=-1
+new_text = ""
+while i > len(text):
+    new_text += text[i]
+    i -= 1
+print(new_text)

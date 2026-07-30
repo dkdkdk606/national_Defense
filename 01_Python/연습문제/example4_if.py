@@ -36,11 +36,11 @@ if dia == "1":
     width = int(input("가로 입력 : "))
     lenght = int(input("세로 입력 : "))
     print(f"사각형의 면적 = {width * lenght:.2f}")
-if dia == "2":
+elif dia == "2":
     width = int(input("밑변 입력 : "))
     lenght = int(input("높이 입력 : "))
     print(f"삼각형의 면적 = {width * lenght / 2:.2f}")
-if dia == "3":
+elif dia == "3":
     radius = int(input("반지름 입력 : "))
     print(f"원의 면적 = {3.141592 * radius**2:.2f}")
 
@@ -72,7 +72,7 @@ else:
 
 # 6. 16진수 글자 하나를 입력하면 16진수인지 아닌지를 구분하며 16진수인 경우 10진수로 변환하여 출력하는 프로그램 작성
 hex_c = input("16진수 한 글자 입력 : ")
-if 'a' <= hex_c <= 'f' or 'A' <= hex_c <= 'F':
+if 'a' <= hex_c <= 'f' or 'A' <= hex_c <= 'F' or "0" <= hex_c <= "9":
     print(f"10진수 ==>   {int(hex_c,16)}")
 else:
     print("16진수가 아닙니다.")
