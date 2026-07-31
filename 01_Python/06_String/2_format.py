@@ -60,7 +60,17 @@ print( '{0:^10}'.format(text))  #전체 10자리 가운데 정렬
 print( '{0:-^10}'.format(text)) #공백문자 지정
 print('-'*20)                   
 
+a = "99999999999999"
+print(f'{int(a) + 111.11}')
+a = "111.11"
+print(f'{int(float(a)) + 111.11}')
 
+a=3
+b=4
+print(f'{a + b =}')
+
+
+print(0.1+0.2)
 
 # 방법4. f-string
 #   f'문자열{변수:포맷서식} 문자열'4

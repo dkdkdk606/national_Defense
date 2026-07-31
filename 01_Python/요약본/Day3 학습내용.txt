@@ -1,0 +1,50 @@
+[Day3 학습내용]
+
+1. if문
+제어문 : 조건문, 반복문
+if (조건식):
+   수행문장
+
+if (조건식):
+   수행문장
+else:
+     수행문장
+
+다중if
+if (조건식1):
+   수행문장
+elif(조건식2):
+   수행문장
+elif(조건식3):
+   수행문장
+elif(조건식4):
+   수행문장
+else:
+   수행문장
+
+중첩if
+if (조건식):
+   if (조건식):
+      수행문장
+   else:
+        수행문장
+else:
+     수행문장
+
+if~else 삼항연산자
+   result = '합격' if jumsu >= 60 else '불합격'
+
+
+2. for문
+  반복 횟수가 정해진 경우
+  for 변수 in 범위(대상):
+       반복할문장들
+
+*범위(대상) : range(), 리스트, 튜플, 문자열 등
+ range(end)
+ range(start, end)
+ range(start, end, step)
+
+중첩 for :   for 안에 for
+
+

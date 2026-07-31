@@ -1,0 +1,39 @@
+1. 다음 코드의 실행 결과를 쓰시오. 
+(1)
+[0, 1, 2] [0, 1]
+(2)
+first = ["egg", "salad", "bread", "soup", "canafe"]
+second = ["fish", "lamb", "pork", "beef", "chicken"]
+third = ["apple", "banana", "orange", "grape", "mango"]
+order = [first, second, third]
+john = [order[0][:-2], second[1::3], third[0]]
+john = [fir, 'lamb', 'chicken', [apple]]
+
+del john[2]
+john = [fir, 'lamb', [apple]]
+
+john.extend([order[2][0:1]])
+john = [fir, 'lamb', [apple], t]
+
+print(john)
+[fir, 'lamb', [apple], t]
+(3)
+[1, 2, 3, 4] None
+(4)
+[1, 3, 3, 5, 7, 9]
+(5)
+[1, 2, 3, 4, 1, 2, 3, 4]
+(6)
+False 6
+(7)
+["Korea", "Japan", "China", [[2, 3], "Tokyo", "Beijing"]]
+(8)
+['orange', 'strawberry', 'melon'], ['banana', 'orange']
+(9)
+ ['Hankook', 'is', 'academic', 'located', 'South Korea']
+
+ 2. 다음 코드를 실행한 후, 2018과 "2018"을 각각 입력했을 경우 알맞은 실행 결과끼리 묶인 것은?
+ 3
+
+ 3. 다음 코드의 실행 결과가 나오도록 빈칸에 알맞은 코드를 쓰시오. 
+ week1 + week2

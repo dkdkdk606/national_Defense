@@ -1,0 +1,27 @@
+1. 다음 코드의 실행 결과를 쓰시오. 
+1)
+21(3/5/13)
+2)
+python  language
+3)
+Python
+is
+a
+programming
+language
+LANGUAGE programming a is Python 
+4)
+문자열을문자열을 입력
+2.
+print('{0:>10s}'.format('python'))
+문자열 'python'을 10개의 공간안에서 우측정렬 하는데 빈칸은 스페이스로
+3. 출력 결과와 같이 나오도록 빈칸에 코드를 완성하시오.
+str1 = 'this is'
+str2 = 'PythON'
+print( str1.title() + ' ' + str2.upper() )
+
+[출력결과]
+This Is PYTHON
+
+
+
