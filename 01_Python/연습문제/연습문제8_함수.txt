@@ -1,0 +1,16 @@
+1. 다음 코드의 실행 결과를 쓰시오.
+1)
+def test(t):
+ t = 20
+ print ("In Function:", t)
+
+x = 10
+print ("Before:", x)
+test(x)
+print ("After:", x)
+
+Before: 10
+In Function: 20
+After: 10
+
+2)

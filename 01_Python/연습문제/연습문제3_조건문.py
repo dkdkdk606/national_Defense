@@ -50,7 +50,9 @@ lee = input('이몽룡 입력 : ')
 # 차가 -1, 2 일대 지는 상황이고 3차이니 %3 이용해서 묶기 가능
 if hong==lee:
     print("비겼습니다.")
-elif (hong=='가위' and lee=='보') or (hong=='바위' and lee=='가위') or (hong=='보' and lee=='바위'):
+elif (hong=='가위' and lee=='보') or\
+      (hong=='바위' and lee=='가위') or\
+      (hong=='보' and lee=='바위'):
     print('홍길동이 이겼습니다.')
 else:
     print('이몽룡이 이겼습니다.')
@@ -72,7 +74,14 @@ else:
 
 # 6. 16진수 글자 하나를 입력하면 16진수인지 아닌지를 구분하며 16진수인 경우 10진수로 변환하여 출력하는 프로그램 작성
 hex_c = input("16진수 한 글자 입력 : ")
+
+# if hex_c.isalpha():
+#     num = num.lower()
+# if num in '0123456789abcde':
+#     ~~
+
 if 'a' <= hex_c <= 'f' or 'A' <= hex_c <= 'F' or "0" <= hex_c <= "9":
+# if num in '0123456789abcdeABCDE':
     print(f"10진수 ==>   {int(hex_c,16)}")
 else:
     print("16진수가 아닙니다.")

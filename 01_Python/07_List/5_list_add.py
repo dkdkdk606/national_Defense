@@ -13,4 +13,5 @@ print(fruits)
 fruits.insert(-1, 'coconut')
 print(fruits)
 
-
+# list.extend(위치, 값) : 특정 위치에 요소를 삽입한다.
+# 언패킹, 패킹 통해 하나의 리스트로 만듦

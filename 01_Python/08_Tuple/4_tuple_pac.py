@@ -18,7 +18,7 @@ print(x, y, z)
 # 확장된 언패킹
 t = 1, 2, 3, 4, 5
 # a, b, c = t      # 오류 발생
-a, b, *c = t      # 오류 발생
+a, b, *c = t   
 # ValueError: too many values to unpack (expected 3, got 5)
 print(a)
 print(b)
