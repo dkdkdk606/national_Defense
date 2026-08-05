@@ -22,12 +22,20 @@ for i in range(5, 0, -1):
         print("*",end="")
     print()
 
+# for i in range(5, 0):
+#     print('*'*i)
+
 for i in range(5, 0, -1):
     for _ in range(i):
         print(" ", end="")
     for _ in range(2*(6-i)-1):
         print("*", end="")
+    
     print()
+
+# for i in range(5, 0):
+#   print(" "*i, end="")
+#   print("*"*(2*(6-i)-1))
 
 # for i in range(1,6):
 #     print(f'{'*'*(2*i-1):^10}')
@@ -36,6 +44,12 @@ for i in range(5, 0, -1):
 # 10. 피보나치 수열을 만드는 프로그램을 작성한다.
 # - 피보나치 수열은 0과 1로 시작되며 다음 피보나치 수는 바로 앞의 두수의 합이 된다.
 # - 0부터 시작되는 피보나치 수열은 키
+
+fibo = [0, 1]
+n= int(input("----------------------------"))
+for i in range(n-1):
+    fibo.append(fibo[i] + fibo[i])
+print(fibo)
 
 cnt = int(input("생성할 피보나치 수의 갯수는? "))
 print("0 1", end=" ")

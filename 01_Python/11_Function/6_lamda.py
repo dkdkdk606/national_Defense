@@ -72,6 +72,14 @@ def onlyeven(list):
             even_list.append(i)
     return even_list
 
+# def filter_onlyeven(list1):
+#     def is_even(a):
+#         return a%2 == 0
+#     even_list = list(filter(is_even, list1))
+#     return even_list
+# print(filter_onlyeven(num_list))
+# print('-'*30)
+
 print(onlyeven(num_list))
 
 print('-'*30)
@@ -79,11 +87,16 @@ print('-'*30)
 num_list = list(range(10))
 even_list = []
 
-onlyEven = lambda x:even_list.append(x) if x%2 ==0 else ""
-
+onlyEven = lambda x:even_list.append(x) if x%2 ==0 else ''
 list(map(onlyEven, num_list))
-
 print(even_list)
+
+print( [ i for i in num_list if i%2==0 ] )
+print('-'*20)
+
+# even_list = list(filter( lambda x:x%2==0 , num_list))
+# print(even_list)
+# print('-'*30)
 
 
 # 문제2 두 리스트의 동일한 인덱스에 있는 값을 합하여 새로운 리스트를 생성하고 반환하는 함수 정의
@@ -99,15 +112,46 @@ def sum_list(list1, list2):
         list_sum.append(list1[i]+list2[i])
     return list_sum
 
+
+
+
 print(sum_list(list1,list2))
+
+
 list_sum = []
 sumList = lambda x: list_sum.append(list1[x]+list2[x])
+# listSum = lambda a, b : a+b
 list(map(sumList, range(len(list1))))
+# list(map(sumList, list1, list2))
 print(list_sum)
 
+print( [ a + b for a, b in zip(list1, list2)] )
 
+zipper = zip(list1, list2)
+print( zipper )
 
+cart = [
+    ["노트북", 1200000, 1],
+    ["마우스", 35000, 2],
+    ["키보드", 80000, 1],
+    ["모니터", 300000, 2],
+    ["USB 케이블", 15000, 3]
+]
+# 조건 1 (리스트 컴프리헨션 + 조건문):
+# 상품 가격(가격 * 수량)이 10만원 이상인 상품들의 상품명(이름)만 뽑아서 새로운 리스트로 만드세요.
+cart_exp = []
+for i in cart:
+    if i[2] >= 100000:
+        cart_exp.append(i)
 
+print(cart_exp)
 
+cart_exp = [ i[2] if x>= 1000000 for i in cart] ?
+
+# 조건 2 (람다 + map 또는 리스트 컴프리헨션):
+# 모든 상품의 가격 * 수량을 계산한 총금액 리스트를 만드세요. (예: [1200000, 70000, 80000, 600000, 45000])
+
+# 조건 3 (종합 실습):
+# sorted() 함수와 람다의 key 옵션을 활용하여, 장바구니 목록을 상품 가격이 비싼 순서(내림차순)로 정렬하여 출력하세요.
 
 
