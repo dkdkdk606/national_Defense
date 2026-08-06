@@ -1,0 +1,288 @@
+[Day8 학습내용]
+
+1. 타입 힌트(type hint)
+- 변수, 함수의 매개변수, 반환값의 자료형을 코드에 명시하는 방법
+- 파이썬은 동적타이핑 언어이므로 타입을 반드시 지정할 필요가 없으나,
+  규모가 커질수록 작업 원할하게 수행하기 위해 타입힌트 사용을 권장
+    - 코드 이해
+    - 자동 완성
+    - 오류 발견
+    - 협업
+- 사용 이유
+    - 가독성 향상
+    - 버그 감소
+    - 협업 용이
+- 타입힌트가 강제적이지는 않음
+
+- 기본 타입힌트 : 파이썬 자료형
+    정수 : int
+    실수 : float
+    문자열 : str
+    논리형 : bool
+    리스트 : list
+    튜플 : tuple
+    딕셔너리 : dict
+    세트(집합) :set
+
+- 반환형은 자료형, 반환이 없는 경우 None
+
+# 기본타입 힌트
+def hello(name: str) -> None:
+    print(name)
+
+def square(x: float) -> float:
+    return x*x
+
+def is_even(x:int) -> bool:
+    return x % 2 == 0
+    
+# 여러 개의 매개변수
+def calc(price:int, count:int, discount:float) -> float:
+    return price * count *(1-discount)
+
+
+# 리스트 타입힌트
+def avg_list(scores: list[int]) -> float:  
+    return sum(scores)/len(scores)
+
+def join_names(names:list[str]) -> str:
+    return ','.join(names)
+
+names = ['홍길동','강감찬','이순신']
+print(join_names(names))
+
+# 튜플 타입힌트
+def get_pos() -> tuple[int, int]:
+    return 10,20
+
+# 딕셔너리 타입힌트
+def get_score() -> dict[str,int]:
+    return {'Lee':100, 'Choi':90}
+
+# 세트 타입힌트
+def get_unique() -> set[str]:
+    return {'A','C','Z'}
+
+# typing 모듈을 이용한 타입힌트
+'''
+  Any : 어떤 자료형도 허용 
+  Union : 여러 타입 허용
+  Optional : 값이 없을수도 있음
+  Callable : 함수를 매개변수로 전달
+ '''
+
+from typing import Any, Union, Optional, Callable
+
+def show(data:Any) -> None:
+    print(data)
+
+# 여러 데이터 유형 허용
+def sqaure(x: int | float):
+    return x*x
+
+def sqaure(x: Union[int,float]):
+    return x*x
+
+def print_name(name: str|None):
+    print(name)
+
+def print_name(name: Optional[str]):
+    print(name)
+
+# 기본값
+def hello(name: str='Guest'):
+    print(name)
+
+
+# docstring : 함수의 매개변수와 반환값에 대한 설명문
+  - 코드의 가독성, 유지보수성, 협업 효율성 높일 수 있음
+  - 타입힌트와 같이 사용할 것을 권장
+
+def avg_list(scores: list[int]) -> float: 
+    """
+    학생 점수 평균계산
+    Args:
+        scores : 학생 점수 리스트
+    Returns:
+        평균 점수
+    """
+    return sum(scores)/len(scores)
+
+----------------------------------------
+
+2. 내장함수(built-in function)
+ - 파이썬에 미리 만들어 둔 함수
+ - import문을 사용하지 않고 바로 이용
+ - 함수 형식에 맞춰 함수이름만 호출하여 사용
+ - https://docs.python.org/3/library/functions.html
+
+abs(), pow(), divmod(), min(), max(), sum(), round()
+all(), any()
+chr(), ord(), ascii()
+bin(), oct(), hex()
+int(), float(), str(), complex()
+bytes(), bytearray()
+list(), tuple(), dict(), set(), frozenset()
+print(), input(), format()
+type(), id()
+range(), len(), sorted(), reversed()
+zip(), filter(), map(), enumerate()
+help()
+isinstance()
+open()
+iter(), next()
+repr()
+
+추가. yield와 반복문
+def even_gen(n):
+    for i in range(2, n+1, 2):
+        yield i
+
+
+3. 파일입출력 
+1) 표준입출력 : 키보드, 모니터
+     input(), print()
+
+2) 파일입출력 단계
+ 1단계. 파일열기(파일객체생성) 
+     파일객체 = open('파일명', 파일열기모드)
+ 2단계. 파일처리
+      읽기(read) / 쓰기(write)
+ 3단계. 파일닫기
+     파일객체.close()
+
+3) 파일종류 : 텍스트(text)파일, 이진(binary)파일
+
+4) 파일열기 모드(mode)
+ r : 텍스트파일 읽기, w : 텍스트파일 쓰기(기존파일 삭제), a : 텍스트 파일뒤에 붙여쓰기
+ r+ : 텍스트파일 읽기/쓰기, w+ : 텍스트파일 쓰기/읽기, a+ : 텍스트 파일뒤에 붙여쓰기/읽기
+ rb : 이진파일 읽기, wb : 이진파일 쓰기(기존파일 삭제), ab : 이진 파일뒤에 붙여쓰기
+ rb+ : 이진파일 읽기/쓰기, wb+ : 이진파일 쓰기/읽기, ab+ : 이진 파일뒤에 붙여쓰기/읽기
+
+5) 파일 읽기(read)
+파일객체.read() : 파일의 내용 전체를 한 문자열로 읽음
+
+파일객체.readline() : 한줄읽기
+
+파일객체.readlines() : 여러줄 읽기
+ 
+파일포인터 탐색 : seek()
+ seek() 메서드 : 파일 포인터의 위치를 원하는 위치로 이동시키는 메서드
+  - 파일은 내부적으로 파일포인터가 존재
+  - 파일포인터는 현재 읽거나 쓸 위치를 가리킴
+  - seek(offset, whence)
+       offset :이동할 바이트 수
+       whence : 기준 위치(생략 가능)
+               0 : 파일의 시작(기본값)
+               1 : 현재 위치
+               2 : 파일의 끝
+
+
+f = open(fname, 'r', encoding='utf-8')
+print(f.read())
+f.close()
+
+f = open(fname, 'r', encoding='utf-8')
+print(f.readlines())
+f.close()
+
+
+6) 파일 쓰기(write)
+ - 파일객체.write(str) : 문자열을 파일에 쓰기
+ - 파일객체.writelines(문자열리스트) : 문자열리스트를 파일에 쓰기
+
+data = ['id, name, score\n', '1,홍길동,100\n',
+         '2,강감찬,90\n', '3,방자,90\n',
+         '4,최영,100\n', '5,이수인,70\n']
+fname = '12_FileIO/score2.txt'
+f = open(fname, 'w', encoding='utf-8')
+f.writelines(data)
+f.close()
+
+# 파일쓰기 모드 'a'
+fname = '12_FileIO/score3.txt'
+f = open(fname, 'w')
+f.write('Hello')
+f.close()
+
+f = open(fname, 'a')
+f.write('HaHaha!!!')
+f.close()
+
+7) with문으로 파일입출력
+# with 문
+- 파일이나 네트워크와 같은 자원을 사용한 뒤 자동으로 정리해주는 문장
+- 파일입출력에서 with 문
+    with open('파일명', '모드', encoding=인코딩) as 파일객체:
+        실행문
+    
+    파일객체.close() 문장을 쓰지 않아도 파일처리가 끝나면 자동으로 close됨
+
+data = ['id, name, score\n', '1,홍길동,100\n',
+         '2,강감찬,90\n', '3,방자,90\n',
+         '4,최영,100\n', '5,이수인,70\n']
+
+fname = '12_FileIO/score2.txt'
+
+with open(fname, 'w', encoding='utf-8') as f:
+    f.writelines(data)
+    
+with open(fname, 'r', encoding='utf-8') as f:
+    print(f.read())
+
+8) 파이썬객체 저장/읽기
+모듈 : pickle
+파일객체 쓰기(저장) : pickle.dump(파일이름.pickle, 쓰기파일객체)
+파일객체 읽기 : pickle.load(읽기파일객체)
+
+import pickle
+
+base_dir = '12_FileIO/'
+with open(base_dir+'list.pickle', 'wb') as f:
+    test = [1,2,3,4]
+    pickle.dump(test, f)
+
+with open(base_dir+'list.pickle', 'rb') as f:
+    test2 = pickle.load(f)
+    print(test2)
+    test2.append(100)
+    print(test2)
+
+9) csv 파일 읽고 쓰기
+- csv 모듈 이용하여 csv 파일을 읽고 쓰기
+    import csv
+
+- csv 파일
+    : comma separate values 파일
+- csv 파일읽기 : csv.reader(파일객체)
+- csv 파일쓰기 : csv.writer(파일객체)
+
+# csv 파일 쓰기
+with open('12_FileIO/student.csv', 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow(['이름','국어','영어','수학'])
+    writer.writerow(['홍길동', 90,95,88])
+    writer.writerow(['방자', 100,56,90])
+
+# csv 파일 읽기
+with open('12_FileIO/student.csv', 'r', encoding='utf-8') as f:
+    reader = csv.reader(f)
+    next(reader)  # 첫줄을 건너뜀
+    for row in reader:
+        print(row)
+
+data2 = [['이름', '국어', '영어', '수학'],
+         ['홍길동', '90', '95', '88'],
+         ['방자', '100', '56', '90']]
+
+# csv 파일 쓰기
+with open('12_FileIO/student2.csv', 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerows(data2)
+
+# csv를 딕셔너리 형태로 읽기
+with open('12_FileIO/student.csv', 'r', encoding='utf-8') as f:
+    reader = csv.DictReader(f)
+    
+    for row in reader:
+        print(row)
