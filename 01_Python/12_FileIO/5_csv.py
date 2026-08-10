@@ -10,7 +10,7 @@
 - csv 파일 쓰기 : csv.writer(파일객체)
 '''
 
-import csv
+import csv 
 
 # csv 파일 쓰기
 

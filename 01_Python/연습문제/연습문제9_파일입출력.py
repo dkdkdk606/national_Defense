@@ -83,11 +83,33 @@ while 1:
 # 4. csv 모듈의 reader(), writer() 메소들 이용하여, 리스트데이터를 csv파일로 쓰는 함수
 # writecsv()와 csv파일을 읽어 리스트데이터를 반환하는 함수 readcsv()를 작성하시오.
 
+import csv
+
+def writecsv(csv_filename, datalist):
+    with open(csv_filename, 'r', encoding='utf-8') as f1:
+        witer
+
+
+    pass
+
+def readcsv(csv_filename):
+    pass
 
 
 
 
 
+# with open('12_FileIO/student.csv', 'w', newline="", encoding='utf-8') as f:
+#     #                               newline 안쓰면 불러올때 공백줄로 리스트 요소 1개로
+#     writer = csv.writer(f)
+#     writer.writerow(['이름','국어','영어','수학'])
+#     writer.writerow(['홍길동',90,95,88])
+#     writer.writerow(['방자',100,56,90])
+
+# # csv 파일 읽기
+# with open('12_FileIO/student.csv', 'r', encoding='utf-8') as f:
+#     reader = csv.reader(f)
+#     next(reader) # 첫줄을 건너뜀 - 보통 키값이 많음
 
 
 
