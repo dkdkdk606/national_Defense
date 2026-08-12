@@ -1,0 +1,235 @@
+[DB 2일차 학습내용]
+
+1. DDL : CREATE
+1) 데이터 베이스 생성
+CREATE DATABASE 데이터베이스이름 character set utf8mb4;
+CREATE SCHEMA 데이터베이스이름 character set utf8mb4 collate utf8mb4_unicode_ci;
+
+2) 테이블 생성
+CREATE TABLE 스키마명.테이블명 ( 
+    열이름1 데이터타입 [PRIMARY KEY] [NOT NULL]  [UNIQUE] ,
+    열이름2 데이터타입 [AUTO_INCREMENT] ,
+    열이름3 데이터타입 [DEFAULT 기본값] [CHECK 체크조건] ,
+  [ 
+    CONSTRAINT명 
+    주키제약이름  PRIMARY KEY 열이름
+    외래키제약이름  FOREIGN KEY 열이름 REFERENCES 테이블명(열이름),
+    on delete [CASCADE | RESTRICT]
+    on update [CASCADE | RESTRICT] ]
+) CHARSET=utf8; 
+
+create table 테이블명 (
+	[column_name1] INT AUTO_INCREMENT,    
+	[column_name2] VARCHAR(255) NOT NULL,
+	[column_name3] DATETIME NOT NULL,
+	CONSTRAINT PRIMARY KEY 
+) CHARSET=utf8;
+
+3) 데이터베이스 사용(변경)  : 
+    USE 데이터베이스명;
+
+  테이블 컬럼별 속성 조회 :
+    DESCRIBE 테이블명;
+
+4) 테이블 컬럼의 제약 조건
+ - 기본키 설정 : 
+    방법1. 기본키 설정할 컬럼명 뒤에 PRIMATY KEY 지정하거나
+    방법2. 테이블 정위 뒷부분에 PRIMATY KEY(컬럼명)
+    방법3.  CONSTRAINT PK_현재테이블명_컬럼명 PRIMATY KEY(컬럼명) 
+
+  -  외래키 설정
+    방법1. FOREIGN KEY(컬럼명) REFERENCE 참조테이블명(컬럼명) 
+    방법2. CONSTRAINT FK_현재테이블명_참조테이블명 FOREIGN KEY(컬럼명) REFERENCE 참조테이블명(컬럼명)
+
+  외래키 설정 시 뒷부분에 [on [DELETE|UPDATE] [RESTRICT|CASCADE]  지정
+  => 쓰지 않으면 RESTRICT 기본값으로 지정됨
+
+5) 컬럼 값 자동 증가 : auto_increment
+ - 자동증가 값 변경 예
+  alter table board3 auto_increment = 200;
+  set @@auto_increment_increment = 3;
+  alter table board auto_increment = 300;
+  set @count = 0;
+  update board set boardId = @count:=@count+1;
+
+ (위 문장 수행오류 시 ,[Edit]-[Preference]메뉴 선택 후 
+   sql edit에서 safe update 체크해제 적용 후 워크벤치 서버 다시 연결 후 수행)
+
+2. DDL : 테이블 변경 : ALTER TABLE
+ 테이블 수정
+ - 테이블에 대한 정의 변경
+ - 새로운 열(컬럼/필드)을 추가
+ - 특정 열의 기본값 변경
+ - 특정 열 삭제 등
+ 
+[ALTER 문 형식]
+ALTER TABLE 테이블명 
+	ADD 열이름 자료형;
+	ADD (열이름1 자료형, 열이름2 자료형,...);
+	MODIFY 열이름 자료형 제약조건;
+	RENAME COLUMN 이전열이름 TO 변경열이름;
+	CHANGE 이전열이름 변경열이름 자료형;
+	ADD PRIMARY KEY (열이름);
+	ADD CHECK (컬럼에대한제약조건식);
+	ADD CONSTRAINT 제약조건으로지정된이름
+		PRIMARY KEY(열이름);
+	ADD CONSTRAINT 제약조건으로지정된이름 
+		FOREIGN KEY (열이름) 
+		REFERENCE 참조테이블(열이름);
+	DROP COLUMN 열이름;
+	DROP 열이름, DROP 열이름, DROP 열이름;
+	DROP PRIMARY KEY;
+	DROP CONSTRAINT key제약조건이름;
+	DROP CONSTRAINT ckeck제약조건이름;
+	ALTER 컬럼명 SET DEFAULT 디폴트값;
+	ALTER 컬럼명 DROP DEFALUT;
+	RENAME new_name;
+
+# alter문 1) : 열추가
+ ALTER TABLE 테이블명 ADD 열이름 자료형;
+ ALTER TABLE 테이블명 ADD (열이름1 자료형, 열이름2 자료형,...);
+
+# alter문 2) : 열속성 변경, 열제약 조건 변경
+ ALTER TABLE 테이블명 MODIFY 열이름 자료형 제약조건;
+
+# alter문 3) : 열이름 변경
+ ALTER TABLE 테이블명 RENAME COLUMN 이전열이름 TO 변경열이름;
+
+# alter문 4) : 열이름과 자료형 함께 변경
+ ALTER TABLE 테이블명 CHANGE 이전열이름 변경열이름 자료형;
+
+# alter문 5-1) : 열삭제
+ ALTER TABLE 테이블명 DROP COLUMN 열이름;
+
+# alter문 5-2) : 여러 개 열삭제
+ ALTER TABLE 테이블명 DROP 열이름, DROP 열이름, DROP 열이름;
+
+# alter문 6) : 기본키 삭제 (외래키로 참조하는 테이블의 제약조건 제거한 후 수행)
+ ALTER TABLE 테이블명 DROP PRIMARY KEY;
+ ALTER TABLE 테이블명 DROP CONSTRAINT 제약조건으로지정된이름;
+
+# alter문 7) : 기본키 제약조건 추가
+ ALTER TABLE 테이블명 ADD PRIMARY KEY (열이름);
+ ALTER TABLE 테이블명 ADD CONSTRAINT 제약조건으로지정된이름 PRIMARY KEY (열이름);
+             
+# alter문 8) : 외래키 제약조건 추가
+ ALTER TABLE 테이블명 ADD CONSTRAINT 제약조건으로지정된이름 
+    FOREIGN KEY (열이름) REFERENCE 참조테이블(열이름);
+
+# alter문 9) 외래키 참조 제약조건 변경 :
+   on [DELETE | UPDATE] RESTRICT -> on [DELETE | UPDATE] CASCADE
+
+* 기본키를 참조하고 있는 다른 테이블이 있는 경우 기본키 삭제 불가
+  외래키 먼저 삭제한 후 기본키 삭제 가능
+
+# ALTER문 10) : CHECK 제약조건 추가/삭제
+ ALTER TABLE 테이블명 ADD CHECK (컬럼에대한제약조건식);
+ ALTER TABLE 테이블명 DROP CONSTRAINT ckeck제약조건이름;
+
+# ALTER문 11) : DEFAULT 제약조건 추가/삭제
+ ALTER TABLE 테이블명 ALTER 컬럼명 SET DEFAULT 디폴트값;
+ ALTER TABLE 테이블명 ALTER 컬럼명 DROP DEFALUT;
+
+# ALTER문 12) : 테이블 이름 변경
+
+ ALTER TABLE old_name RENAME new_name
+ RENAME TABLE old_name TO new_name
+ RENAME TABLE old_name1 TO new_name1,
+        old_name2 TO new_name2,
+ 	old_name3 TO new_name3, ...
+
+
+[참고]. MySQL 스키마(DB)의 테이블에 지정된 제약조건들을 조회
+
+ select * from information_schema.table_constraints 
+ 	where constraint_schema='DB이름' and table_name='테이블이름';
+
+ select * from information_schema.table_constraints
+ 	where constraint_schema='DB이름';
+
+ select * from information_schema.table_constraints
+ 	where table_schema='DB이름';
+
+ select * from information_schema.table_constraints
+ 	where table_name='테이블이름';
+
+3. DDL " 테이블 삭제 Drop문
+- 데이터베이스, 테이블, 뷰, 인덱스, ... 삭제
+- 테이블의 구조와 데이터 모두 삭제
+
+# 데이터베이스(스키마) 삭제
+drop schema 데이터베이스(스미카)이름;
+drop database 데이터베이스(스미카)이름;
+
+# 테이블 삭제
+drop table 테이블명;
+drop table 테이블명1, 테이블명2, ... ;
+
+# if exists : 대상[스키마 또는 테이블]이 존재하면 ...
+drop table if exists testdb3.board;
+drop table testdb3.board2, testdb3.board3;
+
+
+4. 사용자 계정 등록 및 권한 설정
+1) 사용자 계정 등록
+-- create user '사용자아이디'@'호스트' identified by '비밀번호' ;
+# '호스트'
+#   '%' : 모든 ip에서 접속허용
+#   'localhost' : 내부망에서만 허용(보안)
+
+create user 'dbuser01'@'%' identified by 'pw12341234' ;
+create user 'dbuser02'@'%' identified by 'pw12341234' ;
+
+# 권한 부여
+-- grant 권한목록 on 데이터베이스 to 사용자계정:
+# 권한목록 :
+#    select, insert, delete, update
+#    create, alter, drop
+#    all privileges
+
+grant all privileges on testdb2.* to 'dbuser01'@'%';
+grant select, delete, insert, update on testdb2.* to 'dbuser02'@'%';
+
+# 권한 반영
+flush privileges;
+
+# 권한 확인
+show grants for 'dbuser01'@'%';
+show grants for 'dbuser02'@'%';
+
+5. marketdb와 관련 테이블 생성 실습
+
+6. DML : 데이터 삽입 INSERT
+1) 테이블에 레코드 삽입(추가)
+
+[형식1]
+insert into 테이블명 (컬럼명1, 컬럼명2,...) values (값1, 값2,...);
+=> 컬럼 순서와 개수가 일치해야 함
+
+[형식2]
+insert into 테이블명  values (값1, 값2,...);
+=> 컬럼 쓰지 않으면 모든 컬럼의 순서대로 데이터 입력
+
+[형식3]
+insert into 테이블명 (컬럼명1, 컬럼명2,...) values (값1, 값2,...), (값1, 값2,...), (값1, 값2,...), ... ;
+=> 값을 여러개 입력할 떄
+
+# 기본값이 있는 필드를 지정하지 않는 경우, 기본값이 설정
+# 컬럼명의 순서를 바꿔 지정 가능
+
+2) 데이터 임포트를 이용한 테이블 생성/데이터 입력
+
+1단계: 스키마 탭에서 데이터베이스이름 선택 후 마우스 우클릭 - [Table Data Import Wizard] 클릭
+2단계: 임포트할 데이터파일(csv)을 지정 -[Next]
+3단계: 기존의 테이블에 데이터 임포트할지 새로운 테이블을 만들지 선택
+	- 기존의 테이블에 데이터 임포트인 경우 : 테이블 지정 -> [Next]
+    - 새론운 테이블에 데이터 임포트인 경우 : 테이블명 지정-> [Next]    
+4단계: 임포트할 데이터와 테이블의 컬럼이 일치하는지 확인 -> [Next]
+	- 컬럼별 데이터 유형 지정 후
+5단계: Repare Import / Import data file [Next]클릭하여 수행
+6단계: 데이터 생성 메시지 출력
+
+
+7. [실습문제] bookdb와 관련 테이블 생성
+- 데이터 임포트 기능 활용
+  
