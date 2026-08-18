@@ -1,0 +1,211 @@
+[DB 3일차 학습내용]
+
+1. [DML] UPDATE 문 : 테이블의 값 변경
+  - 특정 컬럼(열)의 값을 수정하는 명령어
+  - 조건에 맞는 행을 찾아서 열의 값 수정
+  - 형식 : update 스키마명.테이블명 set 컬럼명=변경값 where 조건;
+
+2. [DML] DELETE 문 : 테이블의 기존 행을 삭제
+  - 테이블에 있는 기존 행(레코드)을 삭제하는 명령어
+  - 형식 : delete from 테이블명 where 조건;
+
+3. [DML] SELECT 문 : 테이블의 레코드(행)들을 컬럼별로 조회
+  - 형식 : 
+  select [all|distinct] 컬럼(열)리스트 (*)
+    from 테이블명
+    [where 검색조건(들)]
+    [group by 열이름]
+    [having 검색조건(들)]
+    [order by 열이름 [asc|desc]]
+  
+  select [all|distinct] 컬럼(열)리스트 (*) : 검색할 열리스트 지정
+  where 검색조건(들) : 질의 결과에 포함될 행들이 만족할 조건 기술
+  group by 열이름 : 그룹 질의 ->특정 컬럼으로 그룹화한 수 각 그룹에 대해
+					한 행씩 질의 결과 생성
+  having 검색조건(들) : group by 절에 의해 구성된 그룹들에 대해 적용할 조건
+  order by 열이름 [asc|desc] : 열이름의 값을 기준으로 결과를 정렬
+				asc : 오름차순,  desc : 내림차순
+                
+4. SELECT문 실행순서
+select	distinct	from	where	group by	having	order by
+  (5)	  (6)      	 (1)	 (2)	  (3)		 (4)	   (7)
+
+# 예. 
+	select * from book;
+	select bookName, bookPrice from book;
+	select bookName, bookPrice from book where bookPrice>=30000;
+	select distinct bookName, bookPrice from book where bookPrice>=30000;
+  
+5. SELECT where 조건식에 사용되는 연산자들
+1) 비교 : >, <, >=, <=, =, !=
+	price >= 10000
+
+2) 논리 : and, or
+	price >= 10000 and price <=20000  
+
+3) 범위 : between 시작 and 끝
+	price between 10000 and 20000    
+
+4) 리스트에 포함여부(멤버) : in, not in
+	price in (10000, 20000, 30000)
+    	pubName in ('삼성출판사', '금성출판사', '화성출판사')
+	fruits not in ('사과','배','수박')    
+
+5) NULL : is null, is not null
+	price is null
+
+6) 패턴매칭 : like 문자열서식 (%, _)
+	(문자열의 일부가 위치하는 데이터 검색)
+    % : all
+    _ : 단일문자(문자하나)
+    ___ : 3개 문자로 구성된 문자열
+    
+    bookName like '%파이썬%'  => '파이썬' 문자열이 들어가있는 모든 문자열
+    bookName like '파이썬%' => '파이썬' 문자열로 시작하는 문자열
+    bookName like '%파이썬' => '파이썬' 문자열로 끝나는 문자열
+    bookName like '%' => 0개 이상의 문자를 가진 문자열
+    bookName like '_' => 단일문자
+    bookName like '____' => 4개의 문자로 구성된 문자열
+
+6. 데이터 정렬
+
+- 특정한 컬럼의 값을 기준으로 질의 결과를 정렬
+
+- 형식
+   SELECT ~ FROM ~ ORDER BY 정렬기준컬럼 [asc|desc];
+    ORDER BY 컬럼명 [ASC|DESC]
+    ASC : 오름차순, 기본값으로 생략 가능
+    DESC : 내림차순
+
+ => ORDER BY 구는 가장 마지막에 실행됨
+
+# 문자열 정렬 순서 : 숫자 - 영문(대문자-소문자) - 한글 (오름차순)
+# 숫자 정렬 : 크기순으로 정렬
+
+# 정렬의 조건을 두 개 이상 지정
+-- 재고수량을 기준으로 내림차순 정렬, 재고수량이 동일한 경우 최근발행일 순으로 정렬
+select * from bookshopdb.book
+	order by bookStock desc, bookDate desc;
+
+
+7. 출력개수 제한 : LIMIT
+
+-- limit : 출력 레코드수 지정
+select * from bookshopdb.book
+	order by bookDate desc
+    limit 5;
+
+-- limit offset 설정 : 시작 위치 변경
+select * from bookshopdb.book
+	order by bookDate desc
+    limit 5 offset 3;
+
+-- limit 시작, 개수
+select * from bookshopdb.book
+	order by bookDate desc
+    limit 1, 4;
+
+8. 집계 함수들
+  SUM() : 합계
+  MAX() : 최대
+  MIN() : 최소
+  AVG() : 평균
+  COUNT(열이름) : 선택된 열의 행 수 (null값은 제외)
+  COUNT(distinct 열이름) : 선택된 열의 행 수 중 중복값 제외하 유일한 값의 수(null값은 제외)
+  COUNT(*) : 전체 행의 수
+  
+ - 집계함수는 사용하는 곳이 정해져 있음 : SELECT구, HAVING구, ORDER BY구
+ - 집계함수는 1개의 값을 반환하는 것에만 함께 사용가능
+   : 상수, 집계함수, DISTINCT, 연산자 등
+
+-- 최소, 최대, 평균을 함께 출력
+-- round() 함수 : 수치값 반올림
+select min(bsQty) as '최저주문량',  max(bsQty) as '최대주문량',   round(avg(bsQTY)) as '평균주문량'
+	from bookshopdb.bookSale;
+
+-- 총수 : COUNT(*), COUNT(컬럼명), COUNT(distinct 컬럼명)
+select count(*) from bookshopdb.bookSale;
+select count(bookNo) from bookshopdb.bookSale;
+select count(distinct bookNo) from bookshopdb.bookSale;
+
+
+9. 그룹별 집계
+  : GROUP BY <속성>
+
+- 특정할 열(컬럼)을 기준으로 그룹화한 후 각 그룹에 대한 질의 결과를 한 행식 생성
+
+1) 형식 :
+	select 집약키컬럼, 집계함수(컬럼), ...
+		from 테이블명
+		GROUP BY 열이름
+        [HAVING 검색(필터링)조건]
+    
+   집약키 : GROUP BY에서 지정된 열이름
+	집약키는 여러 개 지정 가능
+   집약키에 따라 그룹화한 후 그룹별로 집계함수난 조건에 따른 질의 결과 생성
+   HAVING 검색(필터링)조건은 반드시 group by 뒤에 와야 함. order by뒤에 오면 오류
+    
+2) 주의사항:
+	select구에서 1개의 값을 반환하는 상수, GROUP BY에서 사용한 열,
+    집계함수만 나올 수 있음
+    
+3) 그룹별 연산 단계:
+    1단계(SPLIT): 그룹별 데이터 분리
+    2단계(APPLY) : 집계함수나 그룹별 연산을 적용
+    3단계(MERGE) : 그룹별 연산 결과 통합
+
+4) 별칭이름을 기준으로 정렬
+-- 별칭이름을 group by에 사용할 때 따옴표는 쓰지말아야 함
+-- 별칭이름이 공백이 들어간경우 여러개 이름으로 구분되므로 반드시 별칭이름은 공백없이 한다어로 표기할 것
+
+select bookNo, sum(bsQty) as '주문량합계'
+	from bookshopdb.booksale
+	group by bookNo
+    order by 주문량합계; 
+
+5) group by + with rollup
+-- 그룹별 집계 뒤에 전체 요약(총계) 정보함께 제시
+-- group by 뒤에 사용
+
+select bookNo, sum(bsQty) as '주문량합계'
+	from bookshopdb.booksale
+	group by bookNo
+	with rollup;
+
+6) group by + having절
+-- having 검색조건(필터링)
+-- group by에 의해 구성된 그룹들에 대해 적용할 조건 기술
+-- 검색조건(필터링) : 집계함수, 비교연산을 주로 사용
+-- group by 없이 단독으로 사용 불가
+-- where절 뒤에 위치
+-- where절: 개별 행 필터링 / having절 : 그룹별 필터링
+
+7) group by절에 대한 결과를 group_concat()을 사용하여 리스트화
+-- 그룹별 집계 결과를 병합하기 어려움<- 그룹별 결과가 서로 다른 길이를 가짐    
+-- select bookNo
+-- 	from bookshopdb.bookSale
+--     group by clientNo;
+
+select clientNo, group_concat(bookNo) as 'bookID'
+	from bookshopdb.bookSale
+    group by clientNo;
+    
+select clientNo, group_concat(bookNo separator ' ') as 'bookID'
+	from bookshopdb.bookSale
+    group by clientNo;
+
+
+10. 유니온(Union)
+UNION
+ - 두 테이블을 세로방향(상하)으로 결합
+ - 두 테이블의 모든 컬럼이 동일한 경우
+
+ select ~ from 테이블1
+ union
+ select * from 테이블2;
+
+ select ~ from 테이블1
+ union all
+ select * from 테이블2;
+
+ UNION ALL -> 중복 허용

@@ -7,16 +7,22 @@
 create schema uniondb;
 use uniondb;
 # 임포트 위자드로 테이블 생성
+/*
 CREATE table inquiry_2018(
 	id int
 );
-
 LOAD DATA INFILE 'C:/Workspaces/02_DB/코드/data/inquiry_2018.csv'
 INTO TABLE inquiry_2018
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY '\t' 
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
+*/
+select * from uniondb.inquiry2018
+	limit 3, 2;
+select * from uniondb.inquiry2018
+	limit 3 offset 2;
+
 
 select * from uniondb.inquiry2018;
 desc uniondb.inquiry2018;
