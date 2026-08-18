@@ -1,0 +1,318 @@
+[Day9 학습내용]
+
+[ 객체와 클래스 ]
+
+1. 객체와 클래스 개념
+- 클래스(class) : 객체가 가져야할 기본 정보를 담은 코드
+      객체를 생성하는 틀(설계도와 같이)
+- 객체(object) : 함수와 변수를 함께 가지고 있는 단위
+                          현실세계의 유무형 대상
+- 객체지향프로그래밍(object oriented programming):
+   함수처럼 어떤 기능을 함수 코드에 묶어 두지않고
+   객체로 그 기능을 정의하여 재사용할 수 있도록 하는 프로그래밍 기법
+
+- 속성(필드,변수)과 기능(메소드, 함수)
+- 인스턴스(instance) : 클래스에 의해 실제로 생성된 객체
+
+2. 클래스 구현 단계
+ 1단계 : 클래스 선언      class 클래스이름:
+
+ 2단계 : 인스턴스 생성 및 호출
+           객체변수 = 클래스이름()
+    
+ 3단계 : 필드나 메소드 사용
+           인스턴스.메소드()
+       인스턴스.필드
+
+3. 클래스 구조
+ class 클래스이름[(상속클래스명)]:
+     변수1
+     변수1
+
+     def 메소드1(self, 인수1, ...):
+           수행문장들
+
+     def 메소드2(self, 인수1, ...):
+           수행문장들
+
+
+4. 클래스의 인스턴스 확인
+  : isinstance(인스턴스명, 클래스명)
+
+5. self : 인스턴스 자신을 의미
+
+6. 비공개필드와 비공개메소드
+:  필드명 또는 메소드이름 앞에 __ 사용
+  외부에서 직접 필드와 메소드 접근 사용불가
+  클래스 내부에서 비공개필드와 비공개메소드를 접근하기 위한 메소드를 구현하여 이용
+
+- 비공개 필드 : 필드를 클래스 내부에서만 사용가능
+    사용형식 : __필드명
+
+- 비공개 메서드 : 클래스 내부에서만 사용가능한 메서드
+    클래스 내부의 다른 메서드가 호출해서 사용
+    사용형식 : __메서드명()
+
+7. 매직 메소드
+ : 특별한(special) 메소드들
+ - 클래스 내부에 미리 정의된 함수들 :  __메서드명__(self)
+    예. 생성자 : __init__(self, *args)
+- 특별한 기능을 수행하기 위해 미리 정의된 메서드
+- 예. 생성자 :  객체가 생성될 때 파이썬 인터프리터에 의해 자동으로 호출되는 메서드
+
+   # 생성자(constructor)
+    def __init__(self):
+
+    # 소멸자(destructor) : 인스턴스를 삭제할 때 자동 호출 
+    #           (가비지컬레션 시점에 호출: 실행시점을 예측하기 어려움)
+    def __del__(self):
+
+    # 인스턴스를 print()문으로 출력할 때 실행
+    def __repr__(self):
+
+    # 인스턴스를 생성했을 때 인스턴스 그 자체를 print() 함수로 화면에 출력하면 나오는 값
+    #   사용자에게 보여줄 문자열 정의
+    def __str__(self):
+
+    # 인스턴스 사이의 덧셈 작업(인스턴스 + 인스턴스) 할 때 실행되는 메서드
+    def __add__(self, other):
+
+    # 인스턴스 사이의 뺄셈 작업(인스턴스 - 인스턴스) 할 때 실행되는 메서드
+    def __sub__(self, other):
+
+    # 인스턴스 사이에 * 연산
+    def __mul__(self, other):
+
+    # 인스턴스 사이에 == 연산
+    def __eq__(self, value):
+
+    # 인스턴스 사이에 > 연산
+    def __gt__(self, other):
+
+    # 인스턴스 사이에 >= 연산
+    def __ge__(self, other):
+
+    # 인스턴스 사이에 < 연산
+    def __lt__(self, other):
+
+    # 인스턴스 사이에 <= 연산
+    def __le__(self, other):
+
+    # 인스턴스 사이에 != 연산
+    def __ne__(self, value):
+
+    # 인스턴스 사이에 divmod 수행
+    def __divmod__(self, other):
+
+    # 인스턴스 사이에 나눗셈(/) 수행
+    def __truediv__(self, other):
+
+8. 클래스변수와 인스턴스 변수
+  - 클래스 변수 : 클래스의 인스턴스들이 공유하는 변수
+       클래스 정의할 때 가장 앞에 선언
+       사용할 때 '클래스이름.변수'로 지정하여 사용
+
+  - 인스턴스 변수 : 인스턴스 내부에서만 생성되고 사용되는 변수
+	 __init__(self)로 초기화된 변수(인스턴스가 생성될 때 소유하고 있는 변수)
+
+ - 코드 작성시 변수 선언 위치에 따라 값을 변경할 수 있는 유효 범위가 달라지므로
+   인스턴스 변수 중 값이 절대로 변경되지 않아야 하거나
+   여러 객체들 사이에서 공유되어야 하는 경우는 클래스 변수로 선언하여 사용
+
+9. 인스턴스 메서드 / 클래스 메소드 / 정적 메서드
+1) 인스턴스(instance) 메서드
+ - 가장 기본이 되는 클래스의 케서드
+ - 첫번째 매개변수는 항상 self로 해당 클래스의 인스턴스 값이 넘어 옴
+
+정적(static) 메서드
+ -  @staticmethod 데코레이터를 이용하여 정의
+ -  Self 인자가 필요없는 메서드
+ -  인스턴스의 속성에 접근 불가
+ -  주로 유틸리티성 함수를 위한 용도로 사용
+ -  클래스의 어떤 속성도 변화를 일으키지 않는 함수 => 순수함(pure function)
+ -  클래스 내부에 위치하는 이유: 클래스와 연관이 높은 함수를 정의하고 싶을때
+ - 형식은
+    @staticmethod를 메서드 위에 붙이고
+    메서드 정의시 self를 사용하지 않음
+ - 호출 : 클래스이름.정적메서드()
+ - 사용 사례
+    - 수학 계산
+    - 유틸리티 함수
+    - 데이터 검증
+    - 파싱, 정규화
+
+클래스(class) 메서드
+ - @classmethod 데코레이터를 이용하여 정의
+ - 메서드의 첫번째 매개변수로 cls를 사용
+ - 클래스 자체가 넘어옴
+ - 클래스의 속성에 접근 가능
+ - 팩토리 메서드(객체 생성)를 작성하거나, 클래스 속성(변수)에 접근하기 위해 사용
+ - cls로 클래스 변수에 접근
+ - 사용 사례
+    - 클래스 변수 제어
+    - 객체 생성 방식 변경(팩토리 패턴)
+    - 전역 설정 관리
+    - 객체 카운팅
+
+
+10. 상속
+1) 개념
+- 기존의 클래스의 속성과 메서드를 물려받아 사용
+- 파이썬의 모든 클래스는 object 클래스에서 상속받아 정의됨
+- 상속의 목적
+    - 코드의 재사용
+
+2) 상속 구현 문법
+
+class 클래스명(상속클래스명):
+    클래스변수
+
+    def 메서드(self, ....):
+        수행코드
+
+- 부모클래스 (super / base) vs 자식클래스(sub / derived)
+- 메소드 재정의(overriding)
+    부모클래스로부터 상속받은 메소드를 자식클래스에서 재정의
+    super() -> 부모클래스의 메소드를 호출하기 위해 사용
+
+
+from car import Car
+
+class Truck(Car):
+    def __init__(self, modelNum : str, color : str='white',
+                 model : str ='Acorn', speed : int=0, load: float=1):
+        super().__init__(modelNum, color, model, speed)
+        self.load = load
+
+    # 슈퍼클래스에 있던 메서드를  다시 정의(재정의:overriding)
+    def drive(self):
+        print(f'현재 {self.speed}속도로 {self.load}톤의 짐을 싣고 주행중입니다.')
+
+    def loading(self):
+        print(f'최대 {self.load}톤의 짐을 운반할 수 있는 트럭')
+
+
+truck = Truck(modelNum='t211', load=0.5)
+print(truck)
+truck.loading()
+
+
+11. 추상 클래스(abstract class)와 추상 메서드(abstract method)
+- 추상클래스(abstract class): 직접 객체를 생성하기 위한 클래스가 아니라,
+         자식클래스가 따라야할 공통 구조와 규칙을 정의한 클래스
+- 추상메서드 : 부모클래스에서는 메서드 이름과 형태만 정의하고, 실제 동작 코드는 자식 클래스에서 재정의
+- 추상클래스에서는 직접 객체 생성 불가
+
+
+예. 자동차 클래스 -> 추상 클래스
+        직접 자동차 인스턴스를 생성하지 않고, 
+        상속받은 파생(자식)클래스에서 메서드 재정의, 추가 정의하여 인스턴스 생성 & 사용
+     Car 
+      |- HybridCar
+      |- ElectrcCar
+      |- GasolinCar
+      |- Truck
+
+# 추상클래스
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    # 추상메서드(abstract method!) : 형식만
+    def talk(self):
+        raise NotImplementedError('Subclass must implement abstract method!')
+
+12. 다형성(polymorphism)
+ : 같은 메서드를 호출하여 객체에 따라 다르게 동작하는 특성
+
+ 1) 상속관계에서의 다형성
+  상속에서 메서드 오버라이딩과 밀접한 관계가 있는 개념
+  부모클래스의 메서드를 상속받은 자식클래스에서 재정의하므로 다르게 동작하게 함
+
+class Dog(Animal):
+    def talk(self):
+        return '멍멍'
+
+class Cat(Animal):
+    def talk(self):
+        return '야옹'
+
+class Duck(Animal):
+    def talk(self):
+        return '꽥꽥'
+
+# animal = Animal('동물')
+# animal.talk()
+
+dog = Dog('바둑이')
+cat1 = Cat('야옹이')
+cat2 = Cat('코코')
+duck = Duck('귀여미')
+
+for animal in [dog, cat1, cat2, duck]:
+    print(isinstance(animal, Animal))
+    print(f'{animal.name}은 {animal.talk()}')
+
+
+2) 인터페이스와 다형성
+  상속관계가 아닌 객체들이 필요한 메서드를 같은 방식으로 사용할 수 있게 함
+
+class Motorcar:
+    def drive(self):
+        print('모터자동차로 주행합니다')
+
+class Bicycle:
+    def drive(self):
+        print('자전거가 이동합니다.')
+
+vehicles = [Motorcar(), Bicycle()]
+for vehicle in vehicles:
+    vehicle.drive()
+
+
+3) 산술 연산에서 나타나는 다형성
+'''
+ + 연산자도 자료형에 따라 다르게 동작
+'''
+print(10+30)
+print('Hi'+' Hello')
+print([1,2,3]+[3,4])
+
+
+13. 다중상속
+  class 클래스이름(부모클래스1, 부모클래스2, ....):
+
+ 다이아몬드 상속
+  - 다중상속으로 동일한 이름의 메소드를 상속받는 경우
+  - 동일한 이름의 메소드를 탐색하는 순서는 MRO(Method Resolution Order)에 의해 호출
+    => 클래스 목록 중 왼쪽에서 오른쪽 순서로 상속받은 클래스의 메소드가 호출됨
+  - 클래스이름.mro() => 클래스 상속 순서 확인
+
+14. 객체들의 관계 유형
+- 상속관계 :  is-a
+     예. Person <- Undergraduate 
+- 포함관계 : has-a
+     예. Library는 Book들을 가지고 있다
+
+
+15. 캡슐화(encapsulation)와 가시성(visibility)
+- 캡슐화 : 객체 내부의 데이터를 외부로부터 보호하기 접근 제어
+    - 데이터 보호 : 직접 접근 방비
+    - 무결성 유지 : 잘못된 값 저장 방지
+    - 코드 안정성 : 버그, 보안 위험 감소
+    - 유지 보수 용이 : 내부 구조 변경시 외부 영향 최소화
+
+예. 은행계좌
+   잔액은 직접 변경 불가
+   입출금 메서드를 통해서만 잔액 변경 가능
+
+- 접근 제어 표시방법 -> 가시성 
+=> 필드나 메서드이름 앞에 __를 붙여서 작성 => 이름장식(name mangling)
+balance -> public (자유접근, 어디에서나)
+_balance -> protected (내부, 상속관계에서만 접근 가능)
+__balance -> private (클래스 내부에서만 접근 허용)
+
+
+
+
+

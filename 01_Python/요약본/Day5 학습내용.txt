@@ -1,0 +1,152 @@
+[Day5 학습내용]
+
+1. 날짜/시간 출력 포맷
+
+1) 날짜와 시간 관련 모듈 : datetime
+
+# 모듈(module) : 함수나 변수, 클래스들을 모아 놓은 파일(.py)
+#   - 모듈 안에 있는 함수들을 사용하기 위해서는 import문을 사용
+
+from datetime import date, datetime
+
+today = date.today()  # 오늘 날짜 : 날짜 객체
+year = today.year
+month = today.month
+day = today.day
+
+# 현재 시간(연-월-일 시-분-초)
+print(f'오늘은 {year}년 {month}월 {day}일입니다')
+print(datetime.today())
+print(datetime.now())
+
+cur_time = datetime.now().time()
+
+2) 날짜 계산
+from datetime import timedelta
+
+today = date.today()
+print(f'어제는 {today + timedelta(days=-1)}')
+print(f'내일은 {today + timedelta(days=1)}')
+
+cur_time = datetime.now()
+print(f'1시간 전 : {cur_time + timedelta(hours=-1)}')
+print(f'1시간 후 : {cur_time + timedelta(hours=1)}')
+print(f'2일 3시간 후 : {cur_time + timedelta(days=2, hours=3)}')
+
+3) 날짜/시간 출력 형식 지정
+# Y : 4자리 연도, y : 2자리 연도, H:24시간, I:12시간, p:AM PM
+# m : month , M : minute
+print(today.strftime('%Y-%m-%d %H:%M:%S'))
+print(today.strftime('%y-%m-%d %I:%M:%S %p'))
+
+4) 문자열로 된 날짜를 날짜 데이터유형으로 변경
+str_date = '2026-06-20 17:13:50'
+print(type(str_date))
+trans_date = datetime.strptime(str_date, '%Y-%m-%d %H:%M:%S')
+print(trans_date, type(trans_date))
+print(trans_date.hour)
+
+
+2. 문자열 관련 메서드(method)
+# 메서드 : 객체의 함수
+#     객체명.메서드이름()
+
+1) 문자열 대소문자 변환
+ : upper(), lower(), swapcase(), title(), capitalize()
+
+2) 문자열 검색
+ : count(), find(), rfind(), index(), rindex(), startswith(), endswith()
+
+3) 문자열 편집 & 치환
+ : strip(), rstrip(), lstrip(), replace()
+
+4) 문자열 분리 & 결합
+ : split(), rsplit(), join(), splitlines()
+
+5) 문자열 정렬
+ : ljust(), rjust(), center()
+
+6) 문자열 판단
+ : isdigit(), isnumeric(), isdecimal(), isalpha(), isalnum(), islower(), isupper(), isspace(), istitle(), isidentifier()
+
+
+3. 리스트
+- 여러 개 값의 모임
+- 순서를 가짐  => 시퀀스형 데이터
+- 서로 다른 데이터유형을 가질 수 있음
+- 동일한 이름을 갖는 원소들의 연속 저장 영역
+- 여러 개의 데이터가 저장되어 있는 장소 => 집합적 자료형
+- 각 원소는 인덱스(index)로 구분하고, 인덱스로 접근(인덱스는 0부터 시작)
+- 값 변경 가능(mutable)
+- 리스트는 []를 사용
+
+1) 인덱싱, 슬라이싱
+인덱싱(indexing)
+ - 리스트 요소 접근
+ - 리스트 인덱스는 0부터, 마지막 요소는 -1로 접근
+
+슬라이싱(slicing)
+ - 리스트에서 범위를 지정하여 원하는 요소들을 선택 => 리스트
+ - 형식 : 리스트[start:stop+1]
+    => start에서 stop 까지의 요소를 갖는 리스트반환
+ - 형식 : 리스트[start:stop+1:step]
+    => start에서 stop까지 step간격의 요소를 갖는 리스트반환
+
+2) 리스트 값 변경 : 인덱싱, 슬라이싱 이용
+    리스트변수[인덱스] = 값
+    리스트변수[인덱스1:인덱스2] = [값, ..]
+
+3) 리스트 합치기 : +연산
+
+4) 리스트 곱하기(반복) : *연산
+
+5) 리스트 복사
+# 얕은 복사(shallow copy)
+new_names = names
+names[1] = '선우'
+
+# 깊은 복사(deep copy)
+변수 = list(리스트)
+
+import copy
+변수 = copy.deepcopy(리스트)
+변수 = 리스트.copy()
+
+print('깊은 복사(deep copy) --------')
+new_names2 = list(names)
+names[-1] = '허'
+
+
+5) 리스트 특정 요소 삭제
+   del(리스트변수[idx])
+  리스트변수[idx:idx2] = []
+
+6) 리스트 요소 전체 삭제
+   리스트변수.clear()
+   del(리스트변수[:])
+  리스트변수 = []
+
+4. 리스트 조작 메소드
+1) 항목 삽입 :
+  리스트.append(값), 리스트.insert(위치,값)
+
+2) 리스트 확장 : 리스트.extend(리스트2)
+
+3) 항목 삭제 : 리스트.pop(), 리스트.pop(위치),
+       리스트.remove(값)
+
+4) 리스트 정렬 : 리스트.sort(), 리스트.sort(reverse=True)
+    sorted() 내장함수
+
+5) 리스트 역순 : 리스트.reverse()
+    reversed() 내장함수
+
+6) 리스트 요소 갯수 : 리스트.count(값)
+
+7) 리스트 항목 위치 : 리스트.index(값)
+
+5. 리스트 요소 일치 검사 : == != > <
+
+6. 2차원 리스트
+   [ [ , , ... ], [ , ,... ],..., [ , , ]]
+   2차원리스트요소 접근 : a[][]
