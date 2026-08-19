@@ -21,7 +21,10 @@ select bookNo, bookName, pubName
 select distinct B.bookName
 	from bookdb.book B
     right join bookdb.booksale BS
-    on B.bookNo = BS.bookNo;
+    on B.bookNo = BS.bookNo
+    join bookdb.publisher P
+    on B.pubNo = P.pubNo
+    where P.pubName = '정보출판사';
     
 #4. 도서가격이 30,000원 이상인 도서를 주문한 고객의 
 #   고객명, 도서명, 도서가격, 주문수량 출력
@@ -78,10 +81,10 @@ select B.bookName, sum(BS.bsqty) as '총 주문 수량'
 select BC.clientName, sum(BS.bsQty * B.bookprice) as '총구매액'
   from bookdb.booksale BS
   join bookdb.bookclient BC
-    on BS.clientId = BC.clientId
+    on BS.clientNo = BC.clientNo
   join bookdb.book B
     on BS.bookNo = B.bookNo
-  group by BC.clientId, BC.clientName;
+  group by BC.clientNo, BC.clientName;
 
 /*
 ERROR 1054 (42S22): Unknown column 'BS.clientNo' in 'on clause'
@@ -104,7 +107,7 @@ select P.pubName, BS.bsDate, B.bookName, BS.bsQty, P.pubName
 #1. 호날두(고객명)가 주문한 도서의 총구매량 출력
 select sum(bsqty) as '총 구매량'
   from Bookdb.booksale BS
-  where BS.clientId = (select BC.clientId
+  where BS.clientNo = (select BC.clientNo
                         from bookdb.bookclient BC
                         where BC.clientName = '호날두');
 
@@ -112,7 +115,7 @@ select sum(bsqty) as '총 구매량'
 
 select distinct BC.clientName
   from bookdb.bookclient BC
-  where BC.clientID = any(select BS.clientID
+  where BC.clientNo = any(select BS.clientNo
                       from bookdb.booksale BS
                       where BS.bookNo = any(select B.bookNo
                                         from bookdb.book B
@@ -126,11 +129,11 @@ ERROR 1242 (21000): Subquery returns more than 1 row
 #3. 베컴이 주문한 최고 주문수량 보다 더 많은 도서를 구매한 고객명 출력
 select BC.clientName
   from bookdb.bookclient BC
-  where BC.clientId = any(select BS.clientId
+  where BC.clientNo = any(select BS.clientNo
                         from bookdb.booksale BS
                         where BS.bsqty > (select BS.bsqty
                                             from bookdb.booksale BS
-                                            where BS.clientID = (select BC.clientID
+                                            where BS.clientNo = (select BC.clientNo
                                                                   from bookdb.bookclient BC
                                                                   where BC.clientName = '베컴')
                                             order by BS.bsqty desc
@@ -151,17 +154,16 @@ the right syntax to use near 'decs' at line 10
 #4. 서울에 거주하는 고객에게 판매한 도서의 총 판매량 출력
 select sum(BS.bsqty) as '총 판매량'
   from bookdb.booksale BS
-  where clientID = any(select BC.clientID
+  where clientNo = any(select BC.clientNo
                         from bookdb.bookclient BC
                         where BC.ClientAddress = '서울');
 #5. '정보출판사'에서 출간한 도서를 구매한 적이 있는 고객명 출력
 select distinct BC.clientName
   from bookdb.bookclient BC
-  where BC.clientID = any(select BS.ClientID
+  where BC.clientNo = any(select BS.ClientNo
                           from bookdb.booksale BS
                           where BS.bookNo = any(select B.bookNo
                                                 from bookdb.book B
                                                 where B.pubNo = (select P.pubNo
                                                                   from bookdb.publisher P
                                                                   where P.pubName = '정보출판사')));
-
