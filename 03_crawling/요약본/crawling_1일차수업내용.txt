@@ -1,0 +1,148 @@
+[Web Crawling 1일차 수업내용]
+
+1. 웹데이터 수집 개요
+
+1) 웹의 Client–Server 구조
+2) URL의 구조와 역할
+3) HTTP Request와 Response의 동작 과정
+4) HTML과 DOM의 관계
+5) 정적 웹페이지와 동적 웹페이지의 차이
+6) Requests, BeautifulSoup, Selenium의 역할 차이
+7) 웹페이지에 보이는 데이터가 어디에서 전달되는지 이해를 위한 개발자 도구 활용
+
+
+2. 실습 환경 구축
+Miniconda 설치 : python 3.14기준
+
+1) 다운로드
+다운로드 방법1. 
+https://www.anaconda.com/download 페이지 아래에 있는 Download Miniconda Installer를 다운로드 후 설치
+
+다운로드 방법2. 
+https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions 페이지에서
+Windows command Prompt에서 실행하는 다음의 명령어를 복사하여, 명령프롬프트 창에서 실행
+
+다운로드 받은 실행파일을 탐색기에서 열어 실행
+- 라이선스 동의
+- 설치 방법 : Just Me 선택
+- 설치 위치 확인
+- 기본으로 설정된 상태에서 [Next] 클릭하여 설치 진행
+
+[참고. 다운로드 받은 설치exe파일을 CLI로 실행하여 설치하는 과정]
+curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -o .\miniconda.exe
+start /wait "" .\miniconda.exe /S
+del .\miniconda.exe
+
+2) anaconda prompt 실행 후 conda-forge repository 등록
+(base)c:\users\user> conda config --show channels
+(base)c:\users\user> conda config --add channels conda-forge && conda config --set channel_priority strict
+
+3) anaconda prompt(base가상환경)에서 노트북 설치
+ (base)c:\users\user>conda install jupyter
+또는 
+ (base)c:\users\user>conda install notebook
+또는
+ (base)c:\users\user>pip install jupyter
+
+4) jupyter 다운로드를 위한 채널 설정 및 설치 진행
+
+(base) C:\Users\acorn2>conda install jupyter
+Do you accept the Terms of Service (ToS) for
+https://repo.anaconda.com/pkgs/main? [(a)ccept/(r)eject/(v)iew]: a
+Do you accept the Terms of Service (ToS) for
+https://repo.anaconda.com/pkgs/r? [(a)ccept/(r)eject/(v)iew]: a
+Do you accept the Terms of Service (ToS) for
+https://repo.anaconda.com/pkgs/msys2? [(a)ccept/(r)eject/(v)iew]: a
+3 channel Terms of Service accepted
+Retrieving notices: done
+Channels:
+ - conda-forge
+ - defaults
+Platform: win-64
+Collecting package metadata (repodata.json): done
+
+5) C드라이브나 D드라이브 root(\)에서 주피터노트북 실행
+ Anancoda 메뉴- Anaconda Prompt 선택
+ (base) C:\users\username>cd \
+ (base) C:\>jupyter notebook
+
+
+3. 웹크롤링 개요
+- 크롤링 : 프로그램을 이용해서 자동으로 다양한 페이지에서 포괄적으로 데이터를 수집
+- 크롤러 : 수집 프로그램
+- 스크래핑 : 특정 페이지에서 필요한 정보 추출
+- robots.txt : 크롤링 규칙 명시한 페이지(allow / disallow)
+
+
+4. 웹 크롤링 단계
+
+단계1. 웹페이지 분석(파악) : 수집대상의 html 구조
+	태그 -> element
+	속성 : a['href'] 
+	선택자  : class, id
+
+단계2. 페이지 접근(요청)
+ - url 접속 연결 -> 결과 가져옴
+ - 사용 모듈 : requests, urllib.request
+
+ requests.get(url, verify= False, 
+	      headers = {'user-agents':' '})  
+   - SSL Certification Error 발생 시 verify=False 설정
+   - 봇으로 인식하여 거절할 경우 User-agents를 지정
+     user-agents : '브라우저 버전....  '
+
+ response = requests.get(url)
+ html = response.text
+또는
+ html = urllib.request.urlopen(url).read()
+  
+단계3. 파싱(parsing): 추출
+ - BeautifulSoup 패키지 이용
+ - BeautifulSoup 패키지 설치
+   !pip install beautifulsoup4
+ - BeautifulSoup 패키지 임포트
+    from bs4 import BeautifulSoup
+ - BeautifulSoup 객체 생성
+   soup = BeautifulSoup(html, 'html.parser')
+ - BeautifulSoup 객체의 find(), find_all(), select()를 이용한 파싱
+
+
+5. 사용 모듈
+ import requests
+ from urllib.request import urlopen
+ from bs4 import BeautifulSoup
+
+
+6. BeautifulSoup의 파싱을 위한 속성과 메소드들
+ - soup.prettify() : 출력
+
+1) find(), find_all() 
+ - soup객체.find(태그명, 속성) : 제일 첫번째 태그 반환
+ - soup객체.find_all(태그명, 속성) : 리스트로 반환
+
+2) 태그명으로 찾기 : 
+ - 형식 : soup객체.태그명 (결과는 제일 첫번째 것만 반환)
+     예. soup.head, soup.p
+
+3) 부모,형제,자손 태그 찾기
+     soup객체.태그명.contents
+     soup객체.태그명.children
+     soup객체.태그명.parent
+     soup객체.태그명.parents
+     soup객체.태그명.next_sibling
+     soup객체.태그명.next_siblings
+     soup객체.태그명.previous_sibling
+     soup객체.태그명.previous_siblings
+     soup객체.태그명.previous_sibling
+    soup객체.find_all_next()
+    soup객체.find_next()
+    soup객체.find_all_previous()
+    soup객체.find_previous()
+
+3) select() 메서드
+ - 형식 : soup객체.select(선택자)
+ - 리스트로 반환
+    예. soup.select('#mainMenuBox')
+      soup.select('a[href]')
+      soup.select('.box')
+

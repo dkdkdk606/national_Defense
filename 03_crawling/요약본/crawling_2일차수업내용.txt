@@ -1,0 +1,79 @@
+[Web Crawling 2일차 수업내용] 
+
+1. BeautifulSoup의 파싱을 위한 속성과 메소드들
+3) select() 메서드
+- CSS 문법을 사용해 HTML 요소(element)를 선택하는 메서드
+- find() / find_all() 보다 복잡한 HTML 구조를 간결하게 표현할 수 있는 장점
+- 조건에 맞는 모든 요소를 리스트로 반환
+- CSS Selector를 사용
+
+ - 형식 : soup객체.select(선택자)
+ - 리스트로 반환
+    예. soup.select('#mainMenuBox')
+      soup.select('a[href]')
+      soup.select('.box')
+
+[선택자] 
+|선택방법		|CSS Selector|예	|
+------------------------------------------------
+|태그			|`태그명`	|div|
+|class			|`.클래스명`	|.product|
+|id			|`#아이디`	|#content|
+|태그+class		|`태그.클래스`|div.product|
+|하위요소(자손)	|`A B`		|ul a  <br> .product .name|
+|직계자식		|`A>B`		|ul>li|
+|여러 요소		|`A,B`		|h1, h2|
+|속성|`[속성]`		|[href]		|
+|속성값|`[속성=값]`	|[type='text']	|
+|n번째 요소		|`:nth-child()`	|:nth-child(2)|
+
+
+select(태그명[속성])
+select(아이디선택자)
+select(클래스선택자)
+select(하위요소)
+select(직계자식)
+select(n번째요소)
+select(속성선택)
+select(속성값 선택)
+select(속성값 부분검색) : 특정문자열로 시작 => ^, $, * 기호 사용
+	^문자열 : 문자열로 시작
+	$문자열 : 문자열로 끝나는
+	*문자열 : 문자열 포함
+
+4) 텍스트 / 속성값 추출
+- 태그 자체보다 텍스트 추출을 가져오는 경우가 많음
+- 태그.get_text()를 이용한 텍스트 추출
+	https://www.crummy.com/software/BeautifulSoup/bs4/doc/#get-text
+- 태그.get(속성명)을 이용한 속성값 추출
+
+
+2. 정적페이지 크롤링 과정
+ 1) 모듈 임포트
+   import requests
+   from urllib.request import urlopen
+   from bs4 import BeautifulSoup
+
+2) 웹 크롤링 단계
+단계1. 웹페이지 분석(파악) : 수집대상의 html 구조
+
+단계2. 페이지 접근(요청)
+  html = requests.get(url).text
+또는
+  html = urllib.request.urlopen(url).read()
+  
+단계3. 파싱(parsing): 추출
+  soup = BeautifulSoup(html, 'html.parser')
+  soup.find(),   soup.find_all(), ,soup.select() 이용한 파싱
+
+
+3. 정적 크롤링 실습
+ 1) 명언 사이트
+ - 명언, 저자, 태그 추출하여 데이터프레임으로 저장
+ - 명언 주제에 대한 모든 정보 추출하는 함수 작성
+
+2) 다음 뉴스 페이지 헤드라인 뉴스기사
+ - 뉴스 제목과 언론사, 뉴스기사사이트링크 추출
+ - 데이터프레임으로 저장
+ - 함수화
+
