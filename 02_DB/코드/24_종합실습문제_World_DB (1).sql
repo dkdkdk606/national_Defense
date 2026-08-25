@@ -2,10 +2,12 @@
 use world;
 
 #1. World 데이터베이스에 있는 테이블 목록을 조회하세요.
+show tables from World;
 
 #2.  각 테이블의 구조를 확인하세요.
-
-
+show columns from city;
+show columns from country;
+show columns from countrylanguage;
 #3. 인구가 많은 도시 TOP 10을 `Name, CountryCode, Population`으로 조회하세요.
 
 
