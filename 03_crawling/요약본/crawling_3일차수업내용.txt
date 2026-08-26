@@ -1,0 +1,277 @@
+[Web Crawling 3일차 수업내용]
+
+1. 정적 페이지 크롤링 실습
+ #2 다음뉴스 크롤링
+ - 뉴스 상세 페이지 제목, 기자, 내용, 링크 추출 
+ 
+ #3  쇼핑몰
+ - 제품명, 정상가, 세일가, 할인률, 링크 추출
+ - 데이터프레임, 파일로 저장 
+
+
+2. Selenium이란?
+- https://www.selenium.dev/
+- 주로 웹앱을 테스트하는데 이용하는 프레임워크
+- 웹 애플리케이션이 특정 브라우저에 잘 작동하는지 확인하기 위해 사용
+- 웹브라우저 이용하는 자동화 프로그램
+- 웹브라우저를 이용하여 할 수 있는 행동들을 코드로 작성하여 selenium이 이 코드를 웹브라우저에 전달하여 실행
+- 웹 브라우저를 제어하는 함수(webdriver)를 포함한 패키지
+- 서드파티 라이브러리
+
+#Selenium 사용 목적
+- 사람이 직접 브라우저를 조작하는 것처럼 마우스 클릭, 키보드 입력, 스크롤 등의 웹 브라우저 동작을 코드로 자동 제어하기 위해 사용
+- 주로 동적 웹 크롤링과 웹 서비스 테스트 자동화 목적으로 사용
+- 동적 웹 크롤링 및 스크래핑
+   - 자바스크립트(JavaScript)로 나중에 불러와지는 데이터 수집(브라우저가 HTML을 받은 후 JavaScript를 실행하여 데이터를 추가함)
+   - 로그인, 버튼 클릭, 페이지 이동 등 상호작용이 필요한 정보 추출
+- 웹 애플리케이션 테스트 자동화(QA)
+  - 웹사이트 기능이 정상 작동하는지 반복 테스트 수행
+  - 다양한 브라우저 환경에서 버그 사전 발견
+- 반복 웹 작업 자동화
+  - 정해진 시간에 웹서핑, 게시글 작성, 출석 체크 등 수동 작업 대체
+
+# Selenium의 Webdriver
+- webdriver라는 API를 통해 운영체제에 설치된 Chrome등의 브라우저를 제어함
+- 브라우저를 직접 동작시킨다는 것은 JavaScript를 이용해 비동기적으로 혹은 뒤늦게 불러와지는 컨텐츠들을 가져올 수 있다는 것. 즉, '눈에 보이는' 컨텐츠라면 모두 가져올 수 있다는 뜻
+- requests모듈에서 요청은 브라우저에서 '소스보기'를 한 것과 같이 동작하여, JS등을 통해 동적으로 DOM이 변화한 이후의 HTML을 보여주지 않으나
+  Selenium은 실제 웹 브라우저가 동작하기 때문에 JS로 렌더링이 완료된 후의 DOM결과물에 접근이 가능함
+
+
+3. 동적 페이지 크롤링 준비
+1) 필요 패키지 설치
+!pip install selenium
+
+2) 필요모듈 임포트
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+
+4. Selenium 사용
+1) 크롬 드라이버 구동
+from selenium import webdriver
+driver = webdriver.Chrome()
+
+2) 웹페이지 열기
+driver.get('https://www.google.com')
+print(driver.title)
+
+3) 브라우저 종료
+driver.close()
+driver.quit()
+
+4) Webdriver 객체 생성
+driver = webdriver.Chrome(드라이버경로)
+
+5) url에 접근하는 메서드
+get(url)
+
+6) 브라우저 변화가 있을 때
+implicitly_wait(1)
+
+7) 현재 페이지 정보 확인
+- 페이지 제목 :  driver.title
+- 현재 URL : driver.current_url
+- HTML 가져오기 : html = driver.page_source
+
+8) 웹 요소 탐색
+- By 모듈 이용
+
+- By 모듈 임포트
+from selenium.webdriver.common.by import By
+
+- 웹페이지 단일 element에 접근하는 메서드
+ find_element(By.TAG_NAME, 'tag_name')
+ find_element(By.ID, 'id_name')
+ find_element(By.CLASS_NAME, 'class_name')
+ find_element(By.CSS_SELECTOR, 'selector')
+ find_element(By.XPATH('xpath경로') : 스크립트 실행 경로를 찾아 접근
+
+- 페이지의 여러 element에 접근하는 메서드
+find_elements(By.TAG_NAME, 'tag_name')
+find_elements(By.ID, 'id_name')
+find_elements(By.CLASS_NAME, 'class_name')
+find_elements(By.CSS_SELECTOR, 'selector')
+find_elements(By.XPATH('xpath경로')
+
+- 자바스크립트 문장 실행 :
+ execute_script('자바스크립트')
+
+- 접근한 페이지 source 추출
+  html=diver.page_source
+
+- 찾은 element에 적용하는 행동 함수들
+  마우스 click()
+  키보드 send_keys()
+
+
+9) 링크 주소 추출
+
+links = driver.find_elements(By.CSS_SELECTOR, 'a[href]')
+for n, link in enumerate(links[:20]):
+    text = link.text
+    url = link.get_attribute('href')
+    print(f'{n+1} {text}: {url}')
+
+10) 대기
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# 검색 결과의 h3가 나타날 때까지 기다림
+wait = WebDriverWait(driver, 10)
+wait.until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, 'h3'))
+)
+
+# 기다린 이후 작업
+links = driver.find_elements(By.CSS_SELECTOR, 'h3')
+for link in links:
+    print(link.text)
+
+
+11) 구글 검색 후 검색 결과 제목 추출# 앞의 검색 과정 자동화 완성
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+driver = webdriver.Chrome()
+driver.get('https://www.google.com')
+driver.implicitly_wait(2)
+
+search = driver.find_element(By.NAME, 'q')
+
+# 검색어 입력 후 Enter 클락
+search.send_keys('파이썬 Selenium 크롤링')
+search.send_keys(Keys.ENTER)
+
+# 검색 결과의 h3가 나타날 때까지 기다림
+wait = WebDriverWait(driver, 20)
+wait.until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, 'h3'))
+)
+
+# 기다린 이후 작업
+links = driver.find_elements(By.CSS_SELECTOR, 'h3')
+for link in links:
+    print(link.text)
+
+
+12) 스크롤
+# 화면의 하단까지 이동
+driver.execute_script( "window.scrollTo(0, document.body.scrollHeight);" )
+
+# 페이지 맨 위로 이동
+driver.execute_script( "window.scrollTo(0, 0);" )
+
+# 특정 위치로 이동
+driver.execute_script("window.scrollTo(0, 400);" )
+
+# 일정한 간격으로 이동
+driver.execute_script("window.scrollBy(0, 200);" )
+
+# 일정한 간격으로 이동하여 페이지 맨 아래까지 이동
+import time
+
+scroll_size = 200
+while True:
+    # 현재 스크롤 위치
+    current_position = driver.execute_script( "return window.pageYOffset;"  )
+    # 페이지 전체 높이
+    page_height = driver.execute_script( "return document.body.scrollHeight;"  )
+    # 브라우저 화면 높이
+    window_height = driver.execute_script( "return window.innerHeight;"  )
+    # 맨 아래에 도착했으면 종료
+    if current_position + window_height >= page_height:
+        break
+    # 200px 아래로 이동
+    driver.execute_script( f"window.scrollBy(0, {scroll_size});"  )
+    time.sleep(0.3)
+
+# 페이지 높이를 이용한 무한 스크롤
+- 스크롤하면서 새로운 콘텐츠가 로딩이 되는 경우
+- scrollHeight 자체가 계속 증가되므로, 새 콘텐츠가 더 이상 추가되지 않을 때까지 스크롤하는 방식
+
+last_height = driver.execute_script("return document.body.scrollHeight")
+
+while True:
+    driver.execute_script( "window.scrollTo(0, document.body.scrollHeight);"  )
+    time.sleep(2)
+    new_height = driver.execute_script("return document.body.scrollHeight" )
+    if new_height == last_height:
+        break
+    last_height = new_height
+
+
+# 단계별로 하위 요소 찾아가기
+product = driver.find_element(
+    By.CSS_SELECTOR,
+    ".product"
+)
+title_area = product.find_element(
+    By.CSS_SELECTOR,
+    ".title"
+)
+link = title_area.find_element(
+    By.TAG_NAME,
+    "a"
+)
+name = link.find_element(
+    By.CSS_SELECTOR,
+    ".name"
+)
+print(name.text)
+
+
+5. 웹 페이지 크롤링
+단계1. 페이지 구조를 확인
+   정적페이지  => BeautifulSoup
+   동적페이지  => Selenium
+
+단계2. 페이지 연결
+1) 정적페이지
+  html = requests.get(url, headers='user-agent: ', verify=False).text
+  html = urllib.request.urlopen(url).read()
+   
+2) 동적페이지 :  selenium.webdriver
+driver = webdriver.Chrome() # 크롬드라이버 객체
+html = driver.get(url).page_source
+
+단계3. 요소 선택/값 입력 / 버튼 클릭 등 (동적페이지)
+- Selenium
+- find_element() , find_elements()
+- 요소 선택을 위한 기준 값 :
+	 By.TAG_NAME,  By.CSS_SELETOR, By.CLASS_NAME,  BY.NAME,  By.XPATH
+- 개발자관리도구에서 마우스 우클릭-> copy -> 대상복사 (XPATH )
+- 행동 함수 : click(), send_keys()
+- 자바스크립트 문장 실행 : execute_script(스크립트)
+
+단계4. 파싱 (원하는 요소 추출)
+1) BeautifulSoup
+soup = BeautifulSoup(html, 'html.parser')
+soup.find() , soup.findAll(), soup.find_all(), soup.select()
+추출하는 객체의 컨텐츠 속성값들을 가져오기
+  => .text   .attrs  ['속성명']    a['href']   .get()
+
+2) Selenium
+# 페이지 가져오기
+html = driver.get(url).page_source
+
+# 드라이브객체 닫기(종료)
+driver.close()
+
+6. 동적크롤링 연습 : 네이버 로그인
+
+-------------------------------------------------------
+
+# 다음 수업을 위한 준비
+1. 공공데이터 포털(data.go.kr) 회원가입
+2. API 활용 신청
+  - 코로나19 시도 발행현황 
+  - 국토교통부_아파트 매매 실거래가 상세 자료
+
+
+
+
+

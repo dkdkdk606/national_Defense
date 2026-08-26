@@ -8,48 +8,70 @@ show tables from World;
 show columns from city;
 show columns from country;
 show columns from countrylanguage;
-#3. 인구가 많은 도시 TOP 10을 `Name, CountryCode, Population`으로 조회하세요.
 
+#3. 인구가 많은 도시 TOP 10을 `Name, CountryCode, Population`으로 조회하세요.
+select CI.Name, CI.CountryCode, CI.Population
+	from city as CI
+    order by population desc
+    limit 10;
 
 #4. `country`에서 기대수명(LifeExpectancy)이 높은 국가 10개를 조회하세요. 
 #   (NULL은 제외)
-
+select * from country
+    order by LifeExpectancy desc
+    limit 10;
 
 #5. `country`에서 면적(SurfaceArea)이 작은 국가 10개를 조회하세요.
-
+select * from country
+    order by SurfaceArea
+    limit 10;
 
 #6. `city`에서 한국(KOR) 도시를 인구 내림차순으로 정렬하세요.
-
+select * from city
+	where CountryCode = 'KOR'
+    order by population desc;
 
 #7. `country`에서 대륙(Continent) 오름차순, 같은 대륙 내에서는 GNP 내림차순으로 정렬하세요.
-
+select * from country
+    order by Continent, GNP desc ;
 
 #8. `countrylanguage`에서 국가코드가 KOR의 공식언어별 `Percentage`를 내림차순으로 정렬하세요.
+select * from countrylanguage
+	where CountryCode = 'KOR'
+    order by Percentage desc;
 
 
 #9. `country`에서 인구가 1억(100,000,000) 이상인 국가를 조회하세요.
-
+select * from country
+	where population >= 10000000;
 
 #10. `country`에서 유럽(Europe) 대륙에서 기대수명이 80 이상인 국가를 조회하세요.
-
+select * from country
+	where LifeExpectancy >= 80;
 
 #11. `country`에서 정부 형태가 'Republic'을 포함하는 국가를 조회하세요. (부분일치)
-
+select * from country
+	where Name like '%Republic%';
 
 #12. `city`에서 도시 이름이 'New'로 시작하는 도시를 조회하세요.
-
+select * from city
+	where Name like 'New%';
 
 #13. `country`에서 아시아(Asia) 국가 중 인구가 5천만~2억 사이인 국가를 조회하세요(BETWEEN).
-
+select * from Country
+	where continent = 'asia' and ( population between 50000000 and 200000000 );
 
 #14. `country`에서 독립연도(IndepYear)가 1945년 이후인 국가만 조회하세요. (NULL 제외)
-
-
+select * from Country
+	where IndepYear > 1945;
+# 
 #15. 대륙이 Asia 또는 Europe인 국가를 조회하세요(IN).
-
+select * from Country
+	where continent = 'asia' or continent = 'Europe';
 
 #16. `country`에서 대륙별 국가 수를 구하세요.
-
+select continent, sum(population) from Country
+	group by continent;
 
 #17. `country`에서 대륙별 총 인구 합계를 구하세요.
 

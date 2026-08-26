@@ -1,0 +1,461 @@
+[Web Crawling 5일차
+
+#1 [파이썬과 MySQL 연동]
+
+1. 파이썬과 MySQL 연동 과정
+ 1) pymysql 설치 :  !pip install pymysql
+    또는 주피터 프롬프트에서 conda install pymysql
+ 2) pymysql  임포트 : 
+ import pymysql
+
+ 3) mysql 연결 : 
+ conn = pymysql.connect()
+ 
+ 4) cursor 객체 생성 : 
+ cur = conn.cursor()
+
+ 5) 테이블 생성/데이터 삽입/ 데이터 조회 : 
+ cur.execute(sql문)
+
+# 테이블 생성
+sql1 = 'drop table if exists customer;'
+sql2 = '''
+    create table customer (
+        id int not null primary key,
+        name varchar(20) not null,
+        tel char(13),
+        birth date        
+    );
+'''
+cur.execute(sql1)
+cur.execute(sql2)
+
+# 데이터 삽입
+sql = '''
+    insert into customer (id, name, tel, birth) 
+        values  (1,'김바람','010-123-1111','2000-01-01'),
+                (2,'남구름','010-222-1111','2010-01-01'),
+                (3,'서바다','010-321-2111','2001-05-01'),
+                (4,'홍하늘','010-123-1311','2010-02-01');
+'''
+# sql = '''
+#     insert into customer 
+#         values  (1,'김바람','010-123-1111','2000-01-01'),
+#                 (2,'남구름','010-222-1111','2010-01-01'),
+#                 (3,'서바다','010-321-2111','2001-05-01'),
+#                 (4,'홍하늘','010-123-1311','2010-02-01');
+# '''
+cur.execute(sql)
+
+
+ 6) 트랜잭션 : conn.commit()
+## 데이터 삽입과 트랜잭션
+
+# 한 행을 삽입하는 경우
+data = (5, '이방','010-443-1111','1981-10-10')
+
+with conn.cursor() as cur:
+    sql = 'insert into customer (id, name, tel, birth) values (%s, %s, %s, %s);'
+    cur.execute(sql, data)
+conn.commit()
+
+# 여러 행을 삽입하는 경우
+data_list = [(6, '성춘향','010-123-3333','2010-10-10'),
+             (7, '이몽룡','010-444-7777','2009-05-10')
+            ]
+
+with conn.cursor() as cur:
+    sql = 'insert into customer (id, name, tel, birth) values (%s, %s, %s, %s);'
+    cur.executemany(sql, data_list)
+conn.commit()
+
+# 여러 행을 삽입하는 경우
+cur = conn.cursor()
+data_list = [(8, '강하늘','010-777-3333','2011-10-10'),
+             (9, '최장군','010-555-7777','2019-05-10')]
+sql = 'insert into customer (id, name, tel, birth) values (%s, %s, %s, %s);'
+
+for dt in data_list:    
+    cur.execute(sql, dt)
+    
+conn.commit()
+
+ 7)  DB 연결 종료 :
+ conn.close()
+
+
+2. 데이터 삽입을 위한 트랜잭션/롤백 처리 예
+
+conn = pymysql.connect(host='127.0.0.1',
+                       user='crawluser',
+                       password='acorn1234',
+                       db='crawlDB',
+                       charset='utf8')
+# 데이터준비
+data_list = [(10, '성자','010-123-0099','2001-03-10'),
+             (11, '방식','010-444-7788','2008-12-10')]
+sql = 'insert into customer (id, name, tel, birth) values (%s, %s, %s, %s);'
+
+# 데이터삽입
+try:
+    with conn.cursor() as cur:
+        cur.executemany(sql, data_list)
+    conn.commit()
+    print(f'{len(data_list)}행 삽입 완료!')
+except Exception as e:
+    conn.rollback()
+    print(f'{e}:오류 발생, 롤백!')
+finally:
+    conn.close()
+
+
+3. 데이터 조회를 위한 트랜잭션/롤백 처리 예
+# DB 연결
+conn = pymysql.connect(host='127.0.0.1',
+                       user='crawluser',
+                       password='acorn1234',
+                       db='crawlDB',
+                       charset='utf8')
+# 조회
+sql = 'select * from customer;'
+col_names = ['id','name','tel','birth']
+
+try:
+    with conn.cursor() as cur:
+        cur.execute(sql)
+        rows = cur.fetchall()  # 행들을 추출: 튜플들의 튜플 형식
+        print(f'{len(rows)}행 조회!')
+except Exception as e:
+    print(f'조회 실패! : {e}')
+finally:
+    conn.close()
+
+# 데이터 조회를 위한 함수 정의
+
+def select_table(conn, table):
+    sql = f'select * from {table};'  
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            rows = cur.fetchall()  # 행들을 추출: 튜플들의 튜플 형식
+            print(f'{len(rows)}행 조회!')
+    except Exception as e:
+        print(f'조회 실패! : {e}')
+    return rows
+
+
+4. MySQL 연동을 위한 함수 정의
+
+def DB_connect(host='127.0.0.1', db='crawlDB', user='crawluser', pw='acorn1234'):
+    conn = pymysql.connect(host=host, user=user, password=pw, db=db, charset='utf8')
+    return conn
+
+
+5. sqlalchemy 라이브러리를 이용한 DB 연결 및 데이터 조회, 갱신 등
+
+from sqlalchemy import create_engine
+from sqlalchemy import Table, select, MetaData
+
+# DB 연결
+db_conn_str = 'mysql+pymysql://crawluser:acorn1234@localhost/crawlDB'
+db_conn = create_engine(db_conn_str)
+conn2 = db_conn.connect()
+
+# 데이터 조회(select)
+metadata =  MetaData()   # 스키마 컨테이너 객체: 테이블 정의 저장소
+users = Table('customer', metadata, autoload_with = db_conn)   # 테이블 객
+sql =  select(users)
+rows3 = conn2.execute(sql)
+
+for row in rows3:
+    print(row)
+
+sql = select(users.c.id, users.c.name)
+rows = conn2.execute(sql)
+for row in rows:
+    print(row)
+
+sql = select(users.c.id, users.c.name).where(users.c.id==1)
+rows = conn2.execute(sql)
+for row in rows:
+    print(row)
+
+
+# 데이터 갱신(update)
+from sqlalchemy import update
+
+sql = (update(users).where(users.c.id == 1).values(name='김바다'))
+result = conn2.execute(sql)
+print(result.rowcount)
+
+
+=================================================
+
+#2 [쇼핑몰 크롤링 & DB 저장 & 테이블 조회]
+
+0. 필요한 라이브러리(패키지) 임포트
+ import requests
+ from bs4 import BeautifulSoup
+ import pandas as pd
+ import pymysql
+ import time
+
+1. pymysql을 이용하여 MySQL DB 연결
+
+def mysql_connect(host_info):
+    try:
+        conn = pymysql.connect(host=host_info['host'],
+                              port=host_info['port'],
+                              user=host_info['user'],
+                              passwd=host_info['passwd'],
+                              db=host_info['db'],
+                              charset=host_info['charset'])
+        print(f'MySQL {host_info['db']}접속 성공!')
+    except Exception as e:
+        print(f'{e}:오류')
+    return conn
+
+# 
+host_info = {'host':'localhost',
+             'port':3306,
+             'user':'root',
+             'passwd':'acorn1234',
+             'db':'crawlDB',
+             'charset':'utf8mb4'}
+conn = mysql_connect(host_info)
+
+
+2. crawlDB 생성 및 product 테이블 생성
+
+def createDB_and_Table():
+    host, port, user, pw = 'localhost', 3306, 'root', 'acorn1234'
+    sql_list = ['drop database if exists crawlDB;',
+                'create database crawlDB default character set utf8mb4;',
+                'use crawlDB;',
+                'drop table if exists product;',
+                '''
+                    create table product (
+                        prdId int auto_increment not null,
+                        name varchar(300) not null,
+                        price varchar(20),
+                        salePrice varchar(20),
+                        salePct varchar(10),
+                        link varchar(300),
+                        primary key(prdId)
+                    );
+                ''']
+    try:
+        # MySQL 연결
+        conn = pymysql.connect(host=host, port=port, 
+                               user=user, password=pw, charset='utf8mb4')
+        print('MySQL 연결 성공!')
+        with conn.cursor() as cur:
+            for sql in sql_list:
+                cur.execute(sql)
+                time.sleep(1)    # 서버 부하 감소!
+            cur.execute('desc product;')
+            result = cur.fetchall()
+            print(f'테이블 product 정보: \n{result}')
+        conn.commit()
+        print('product 테이블 생성완료!')
+    except Exception as e:
+        conn.rollback()
+        print(f'오류발생:{e}')
+    finally:
+        conn.close()
+        print('MySQL 접속 종료!')
+
+
+3. 쇼핑몰 데이터 크롤링 및 DB 저장
+방식#1. 각 행을 테이블에 insert
+ 1) DB 연결 : conn = pymysql.connect()
+ 2) DB/테이블 생성 : 
+     cur = conn.cursor()
+     cur.execute(sql) : sql : DB/테이블 생성문
+ 3) db table에 데이터 한 행 저장하는 함수 insert_data() 작성
+ 4) 1개 상품 정보 추출(크롤링)하는 함수 get_product_info(item) 수정
+ 5) 수집한 데이터를 DB table에 저장하도록 get_page_product(url)에서 insert_data()함수 호출하는 코드 삽입
+ 6) 모든 데이터 상품 정보 추출 후 commit
+ 7) DB 연결 종료
+
+방식#2
+ 1) DB 연결 : conn = pymysql.connect()
+ 2) DB/테이블 생성 : 
+     cur = conn.cursor()
+     cur.execute(sql) : sql : DB/테이블 생성문
+ 3) 1개 상품 정보 추출(크롤링)하는 함수 get_product_info(item) 작성
+ 4) get_page_product(url)에서 여러 개 상품을 추출하여 데이터프레임으로 저장
+ 5) 데이터프레임 데이터를 DB 테이블에 저장하고 commit
+ 6) DB 연결 종료
+
+
+1) 크롤링 페이지 url 목록 생성
+
+def get_product_urls():
+    url = 'http://jolse.com/category/toners-mists/1019/'
+    headers = {'User-Agent':'Mozilla/5.0'}
+    html = requests.get(url, headers=headers).text
+    soup = BeautifulSoup(html, 'html.parser')
+    last = soup.find('a', {'class':'last'})['href'].split('=')
+    page = last[0]
+    lastNo = last[-1]
+    return [f'{url}{page}={i}' for i in range(1, int(lastNo)+1)]
+
+
+2) 1개 상품의 이름, 정상가, 세일가, 링크 정보 추출하는 함수 정의
+
+def get_product_info(item):
+    # 상품명 추출
+    prdBox = item.find('strong',{'class':'name'})
+    prdName = prdBox.find_all('span')[-1].text
+    # 상품가격 추출
+    ul = item.find('ul')
+    priceInfo = ul.find_all('span')
+    # 정상가 추출
+    price = priceInfo[1].text
+    # 세일가 추출
+    try:
+        saleinfo = priceInfo[4].text.split('(')
+        salePrice = saleinfo[0].strip()
+        salePct = saleinfo[-1].rstrip(' OFF)')
+    except:
+        salePrice = ''
+        salePct = '0%'    
+    # 상품링크 : 상세페이지주소
+    link = prdBox.a['href']
+    return prdName, price, salePrice, salePct, link
+
+3) 한 페이지에 들어있는 상품목록 추출 함수 정의
+
+def crawl_prducts_page(url):
+    headers = {'User-Agent':'Mozilla/5.0'}
+    html = requests.get(url, headers=headers).text
+    soup = BeautifulSoup(html, 'html.parser')
+    prdList = soup.find('ul', {'class':'prdList grid5'})
+    items = prdList.find_all('div', {'class':'description'})
+    return [get_product_info(item) for item in items]   
+
+
+4. 크롤링 데이터를 DB table에 저장하기
+
+def insert_data(conn, prd_list):
+    try:
+        with conn.cursor() as cur:
+            sql = '''insert into product
+                    (name,  price, salePrice, salePct, link)
+                    values (%s, %s, %s, %s, %s);'''
+            cur.executemany(sql, prd_list)
+        conn.commit()
+        print(f'{len(prd_list)}행 삽입 성공!')
+    except Exception as e:
+        conn.rollback()
+        print(f'오류발생!: {e}')
+ 
+
+1) 방식1. 페이지 단위로 크롤링하고 데이터 DB에 저장
+
+def crawl_and_storeDB_by_page():
+    # 1단계. DB 접속
+    host_info = {'host':'localhost',
+                 'port':3306,
+                 'user':'root',
+                 'passwd':'acorn1234',
+                 'db':'crawlDB',
+                 'charset':'utf8mb4'}
+    conn = mysql_connect(host_info)
+    
+    # 2단계. 크롤링하려는 웹페이지 목록 생성
+    url_list = get_product_urls()
+    page_n = len(url_list)
+    
+    # 3단계. 웹페이지 단위로 크롤링하고, table에 삽입
+    for i, url in enumerate(url_list):
+        try:
+            result = crawl_prducts_page(url)
+            insert_data(conn, result)
+            print(f'{i+1}/{page_n} page 크롤링 후 데이터삽입 ')
+            time.sleep(1)
+        except Exception as e:
+            print(f'{url}->{e}:에러발생!')
+    print('모든 페이지 저장완료!')
+    conn.close()
+    print('MySQL DB 접속종료!') 
+
+
+2) 방식2. 데이터 크롤링 완료 후 데이터 DB에 저장
+
+def crawl_and_storeDB():
+    # 1단계. DB 접속
+    host_info = {'host':'localhost',
+                 'port':3306,
+                 'user':'root',
+                 'passwd':'acorn1234',
+                 'db':'crawlDB',
+                 'charset':'utf8mb4'}
+    conn = mysql_connect(host_info)
+    
+    # 2단계. 크롤링하려는 웹페이지 목록 생성
+    url_list = get_product_urls()
+    page_n = len(url_list)
+    all_data = []
+    
+    # 3단계. 웹페이지 단위로 크롤링하고, 모든 페이지 크롤링 후 table에 삽입
+    for i, url in enumerate(url_list):
+        try:
+            result = crawl_prducts_page(url)
+            all_data.extend(result)
+            print(f'{i+1}/{page_n} page 크롤링 완료! ')
+            time.sleep(1)
+        except Exception as e:
+            print(f'{url}->{e}:에러발생!')
+    try:
+        insert_data(conn, all_data)
+        print('모든 페이지 저장완료!')
+    except Exception as e:
+        print(f'데이터삽입 에러!:{e}')
+    conn.close()
+    print('MySQL DB 접속종료!') 
+
+
+5. 저장한 데이터베이스 테이블 조회 및 추출
+
+1) pymysql을 이용
+
+def select_table(conn, table):
+    with conn.cursor() as cur:
+        sql = f'select * from {table};'
+        cur.execute(sql)
+        result = cur.fetchall()
+        print(f'{len(result)}행 조회')
+    return result
+
+host_info = {'host':'localhost',
+                 'port':3306,
+                 'user':'root',
+                 'passwd':'acorn1234',
+                 'db':'crawlDB',
+                 'charset':'utf8mb4'}
+conn = mysql_connect(host_info)
+data_rows = select_table(conn, 'product')
+conn.close()
+
+2) pd.read_sql() 이용하여 추출하고 데이터프레임으로 저장
+
+sql = 'select * from product;'
+conn = mysql_connect(host_info)
+df = pd.read_sql(sql, conn)
+conn.close()
+df.head()
+
+3) sqlalchemy 이용하여 추출하고 데이터프레임으로 저장
+
+from sqlalchemy import create_engine
+
+db_conn_str = "mysql+pymysql://root:acorn1234@localhost/crawlDB?charset=utf8mb4"
+db_conn = create_engine(db_conn_str)
+conn = db_conn.connect()
+sql = 'select * from product;'
+df3 = pd.read_sql(sql, conn)
+conn.close()
+db_conn.dispose()
+df3.head()
