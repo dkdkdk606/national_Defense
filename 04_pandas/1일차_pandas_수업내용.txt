@@ -1,0 +1,181 @@
+[pandas 1일차 수업내용]
+
+0. pandas 
+- Python Data Analysis Library
+- pandas 이름 : panel data + python data analysis
+- 데이터 가공/처리를 위해 최적화된 파이썬 라이브러리
+    - 데이터분석 업무의 80~90%는 데이터 수집과 정리하는 일
+- Wes McKinney 개발
+- numpy 기반으로 작성되었지만 numpy 보다 훨씬 유연하고 편리하게 데이터 핸들링 가능
+- 공식사이트 : https://pandas.pydata.org/ 
+- 판다스 목적
+  - 서로 다른 유형의 데이터를 공통된 포맷으로 정리하는 것
+  - 행과 열로 이루어진 2차원 데이터프레임을 처리 할 수 있는 함수제공 목적
+  - 실무에서 사용하는 데이터 유형 : 데이터 프레임
+
+1. 모듈 임포트
+import pandas as pd
+
+참고.
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity="all" ['last', 'last_expr']
+
+import warnings
+warnings.filterwarnings(action='ignore')
+# warnings.filterwarnings(action='default')
+
+2. pandas 핵심 객체
+시리즈 : pd.Series()
+데이터프레임 : pd.DataFrame()
+
+3. 1차원 데이터 객체 : Series
+
+1) 시리즈 소개
+- pandas의 기본 객체 중 하나
+- 데이터가 순차적으로 나열된 1차원 배열 형태
+- numpy의 ndarray를 기반으로 인덱싱 기능을 추가하여 1차원 배열을 나타냄
+- index를 지정하지 않으며 기본적으로 ndarray와 같이 0-based 인덱스 생성
+- index를 지정할 경우 명시적으로 지정된 index를 사용
+- 같은 타입의 0개 이상의 데이터를 가질 수 있음
+
+2) 시리즈 생성
+- pd.Series(seq_data, index=None, dtype=None, name=None,...) 함수 이용
+  seq_data : array_like, Iterable, dict, scalar,
+
+3) 시리즈 속성들
+- 시리즈.index
+- 시리즈.index.name
+- 시리즈.values -> 1차원 배열(ndarray)
+- 시리즈.name
+- 시리즈.size
+- 시리즈.shape
+
+4) 시리즈 인덱싱
+- 정수형 위치 인덱스 : RangeIndex 객체
+   객체명[정수인덱스]
+   예. s[0]
+- 정수형 인덱스 : Index 객체
+   객체명[정수인덱스] 
+   예. s[0]
+- 문자형 인덱스 : Index 객체
+  객체명['문자인덱스'] 또는 객체명.문자인덱스명
+  예. s['인천'], s.인천
+
+여러 개 요소 인덱싱: 리스트 사용
+ 예. s3[[1,2]]   s3[['서울','대전']]
+
+5) 시리즈 슬라이싱
+- 정수형 위치 인덱스를 사용한 슬라이싱 :
+    시리즈[start : stop+1]
+- 문자(라벨)인덱스 이용 슬라이싱 : 
+    시리즈['시작라벨' : '끝라벨'] : 표시된 라벨 범위 모두 추출
+
+6) 시리즈 연산
+- 벡터화 연산 :  numpy 배열처럼 
+   집합적 자료형의 원소 각각을 독립적으로 계산을 진행
+   단 연산은 시리즈의 값에만 적용되며 인덱스 값 변경 불가
+   시리즈와 숫자(스칼라) 연산 : Series객체 + 연산자(+, *, -, / ) + 숫자
+   예. s / 1000000
+- 벡터화 인덱싱:
+   boolean Series가 []와 함께 사용되면 True 값에 해당하는 값만 새로 반환되는 Series객체에 포함됨
+   다중조건의 경우, &(and), |(or)를 사용하여 연결 가능
+   예. (s > 2500000) & (s < 5000000)
+- 두 시리즈간 연산 :
+   시리즈와 시리즈 연산 : Series1 + 연산자(+, *, -, /) +Series2
+  같은 인덱스를 찾아 연산을 진행
+  동일한 인덱스는 연산을 진행하고 나머지 인덱스는 연산처리가 불가 해 NaN 값 처리
+- 시리즈의 values 속성을 이용한 연산
+- 시리즈 산술 연산 메서드
+  Series1.add(Series2)   Series1.sub(Series2)  Series1.mul(Series2)  Series1.div(Series2)
+- in 연산자 :  '대구' in s
+
+7) 시리즈 데이터의 갱신, 추가, 삭제
+ s['부산'] = 3500000
+ del s['부산']
+ s['대구'] = 1875000
+
+8) 시리즈 관련 함수들
+ 시리즈.unique()
+ 시리즈.count()
+ 시리즈.value_counts()
+ 시리즈.min()
+ 시리즈.max()
+ 시리즈.mean()
+
+9) 날짜 인덱스 생성
+  pd.date_range(start=None, end=None, periods=None, freq='D')
+	start : 시작날짜
+	end : 끝날짜
+	periods : 날짜 생성기간
+	freq : 날짜 생성 주기, 기본값은 'D' (Day)
+	start는 필수 옵션/end나 periods는 둘 중 하나가 있어야 함
+
+
+4. 2차원 Tabular 데이터 : 데이터프레임
+
+1) 데이터프레임 생성
+ - pd.DataFrame() :  2차원 리스트, 딕셔너리, 시리즈, array_like
+
+DataFrame(data=None, index=None, columns=None, dtype=None, copy=None)함수 사용
+	data : array-like, Iterable, dict, or scalar value
+	index : index or array-like
+	columns : index or array-like
+	dtype : dtype
+
+예. pd.DataFrame([['a','b','c'],['a','a','g'],['a','a']])
+예. pd.DataFrame({'kor':[90,80,70],
+                    'math':[85,98,75],
+                    'sci':[88,99,77],
+                    'eng':[87,89,86]})
+예. 
+  a = pd.Series([100, 200, 300], index='a b d'.split())
+  b = pd.Series([101, 201, 301], index='a b k'.split())
+  c = pd.Series([110, 210, 310], index='a b c'.split())
+  pd.DataFrame([a,b,c])
+
+ - csv파일 읽어 데이터프레임 생성 : 
+   pd.read_csv(파일명,  header=, index_col=, usecols= )
+
+ - 데이터프레임을 csv 저장: pd.to_csv()
+
+
+2) 데이터프레임 구조
+ - 2차원 tabular 형식 (행, 열)
+	행 -> index  : 정수위치인덱스 0,1,2,3,... 
+	열 -> columns : 정수위치인덱스 0,1,2,3,... 
+ - df.columns  : 열인덱스
+ - df.index : 행인덱스
+ - df.values : 값
+ - df.columns.name  : 열인덱스 이름
+ - df.index.name : 행인덱스 이름
+
+3) 데이터프레임의 데이터 파악
+ - info() : 데이터 변수, 결측치, 데이터 유형 등 개요
+ - describe() : 수치형데이터의 요약통계량(count, mean, std, min, 25%, 50%, 75%, max)
+      - describe(include=all) : 범주형데이터와 수치형데이터 요약통계량
+      - 범주형 데이터는 top, freq, unique
+      - include, exclude : 데이터유형으로 지정
+          - describe(include=['int64'])
+- head(), tail()
+- size, shape
+
+4) 데이터프레임 변경
+ - 컬럼 삭제, 삽입
+ - 행 삭제 : del
+
+5) 데이터프레임 인덱싱
+- 열 인덱싱 [] :  df[col] 
+- 행 인덱싱 [:] : df[row1:row2]
+- 개별요소 인덱싱 [열][행:행] : df[col][row1:row2]
+- loc(), iloc() 인덱서
+
+6. 데이터프레임 인덱스 변경
+  set_index(col, drop=False, inplace=False)
+  reset_index( drop=False, inplace=False)
+
+7. 재색인(reindex)
+ Series.reindex( )
+ DataFrame.reindex()
+
+8. 데이터프레임 행/열 이름 변경
+  rename(index={old=new,  }, columns={old=new,...})
