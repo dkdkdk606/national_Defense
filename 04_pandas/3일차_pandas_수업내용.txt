@@ -1,0 +1,185 @@
+[pandas 3일차 수업내용]
+
+
+1. 데이터 정제
+ 1) 결측치(누락데이터)
+    결측치 확인 : isna().sum(), isnull().sum()
+
+    결측치 삭제 : dropna(*, axis=0, how='any', thresh=_NoDefault.no_default, subset=None, inplace=False)
+	axis :  0 or 'index' : 결측치를 포함하는 행들을 삭제
+		1 or 'columns' : 결측치를 포함하는 열들을 삭제
+	how : 'any' : NaN이 하나라도 존재하면 삭제
+		'all' : 모든 데이터가 NaN인 경우 삭제
+	thresh : 지정된 개수 이상의 NaN이 있는 경우 삭제
+	subset : 결측치 삭제할 컬럼 이름들 (리스트형식)
+	inplace : True이면 기존 데이터 변환
+
+    결측치 대체 : 
+      fillna(value, *, axis=None, inplace=False, limit=None)
+	value : 결측치를 치환할 값(여러개인 경우: 딕셔너리)
+	axis : 결측치 치환할 방향 {0 or 'index', 1 or 'columns'}
+	inplace : bool, default False
+	limit : 치환 회수 {int, default None}
+	downcast : dict, default is None
+   
+     ffill( ) : NaN이 있는 행의 직전(forward) 행의 값으로 대체
+     bfil() l: NaN이 있는 행 바로 다음(backward) 행의 값으로 대체
+
+   컬럼마다 결측치를 대체하는 값을 다르게 처리
+     df.fillna(value={'컬럼명1':값1, '컬럼명2':값2,...,'컬럼명n':값n})
+
+2) 중복값 : duplicated(), drop_duplicates()
+ 중복 데이터 확인 :  duplicated(subset=None, keep='first')
+	keep : {'first','last', False}, default='first'
+	first : 위부터 검사
+	last : 마지막부터 검사
+	False : Mark all duplicates as True.
+	subset : 특정 컬럼이나, 여러 컬럼조합 기준 중복 찾기
+	https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.duplicated.html
+
+ 중복데이터 제거 :drop_duplicates**(subset=None, *, keep='first', inplace=False, ignore_index=False)
+	https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.drop_duplicates.html
+
+
+
+2. 데이터 변환
+ - 데이터 변환 : 단위 환산, 자료형 변환, 값의 부분집합 변경, 값 치환
+ - 범주형 데이터 처리 : 구간 분할, 더미변수
+ - 데이터 정규화 및 표준화
+ - 시계열 데이터 처리
+
+1) 데이터 자료형 변경
+    astype(dtype)  : dtype에  'int32'  'float64', 'str', 'datetime64[us]', 'category' 등 지정
+	astype({컬럼:dtype,...})-
+
+   데이터프레임의 여러 컬럼을 동시에 변환
+	df.astype({'id':str, 'price':'int32'})
+
+ 2) 날짜 문자열을 datetime64 데이터형으로 변환 : 
+    pandas.to_datetime()
+
+ 3) Series.map()을 이용한 데이터 부분집합 변경
+ 
+ 4) 문자열 데이터에서 문자 분리/변경 등
+    df['date'].str.split('-')
+    df['ratio_str'].str.replace('%','')  # 데이터 치환
+
+ 5) 범주형 데이터(Categorical)
+  - Categorical은 반복되는 문자열/범주형(명목형,순서형) 데이터를 효율적으로 저장하기 위한 특수 데이터 유형
+  - 실무에서 메모리 절약 + 범주 순서 관리 + 그룹별연산 최적화에 매우 중요
+  - 일반적으로 문자열(Object/Str)은 각 행마다 문자열을 그대로 저장함
+  - Categorical은 내부적으로
+	카테고리 목록(categories) : 예. 남, 여
+	값은 정수 코드로 저장(codes) : 예. 남-> 0, 여-> 1 로 저장
+	예. 남,여,여,남,남 -> 목록 :(남,여), 저장: 0 1 1 0 0
+
+  - 반복적인 문자열/범주형 데이터를 메모리 절약, 그룹별 연산 최적화를 위해 코드화된 데이터로 저장 운영하는 특수한 데이터
+  - 목록categories과 코드codes로 구성
+   
+  - 범주형 데이터 생성 :  pd.Categorical(value=, categories=, ordered=False)
+
+     예. pd.Categorical(df5['grade'],
+                               categories=['C','B','A'],
+                               ordered=True)
+
+    - 순서있는 카테고리의 경우 대소 비교 가능
+    - 범주형 데이터의 카테고리와 코드 확인 :  시리즈.cat.categories, 시리즈.cat.codes
+    - 카테고리 추가 : 시리즈.cat.add_categories(['D','E'])
+    - 카테고리 제거 : 시리즈.cat.remove_categories(['B'])
+    - 사용하지 않는 카테고리 제거 : 시리즈.cat.remove_unused_categories()
+    - 카테고리 이름변경 :  시리즈.cat.rename_categories({변경전:변경후, ... })
+    - 카테고리 순서 변경 : 시리즈.cat.reorder_categories( 변경카테고리)
+    - 새카테고리로 변경 : 시리즈.cat.set_categories(['B','A','C'], ordered=False)
+    - ordered 속성 변경 : 시리즈.cat.as_unordered()
+
+
+ 6) 데이터 범주화 : 수치형을 범주형으로
+   수치형을 등간견 또는 지정한 범주로 변환 : pd.cut(x, bins=, labels=) 
+	x : 구간 나눌 실제 값
+		bins : 구간 경계값
+		labels: 카테고리 값
+
+  	- 구간 경계선을 선정하여 범주형 데이터로 변환
+	- bins에 구간지정하거나 갯수 사용
+    		갯수 지정시 : 등간격으로 구간 경계값 설정됨
+	- 범주화 기준이 명확한 경우 사용 : 정책/비즈니스 룰 기반
+	- 범주형 데이터 Categorical 클래스 객체로 변환
+		
+	- np.histogram()
+
+   수치형 데이터를 동일한 빈도로 범주화 : pd.qcut()
+	- qcut(data, bins, label) : 
+	구간 경계선을 선정하지 않고 데이터 개수가 같도록 구간을 분할하여 범주형 데이터로 변환
+	- 분위수 기반으로
+	- 상대적 등급화 
+		- 고객 세그멘테이션 ; RFM,
+		- 상위 20%, 하위 20% 분류 시 사용
+
+    범주형데이터의 더미변수화 : pd.get_dummies( , dtype=)
+
+
+ 7) 데이터 척도변환(scaling)
+  - 각 데이터를 최대값의 절대값으로 나눈 비율로 변환 : x / |max(x)| (최대값은 1)
+  - 정규화 : min-max scaling (최소값 0, 최대값 1이 되도록 변환)
+  - 표준화 : z-score (평균은 0, 분산은 1이 되도록 변환)
+
+ 3. 시계열 데이터 처리
+  - 시계열 데이터를 데이터프레임의 행 인덱스로 사용하면 시간으로 기록된 데이터 분석에 매우 용이함
+  - Timestamp : 특정한 시점을 기록
+  - Period : 두 시점 사이의 일정한 기간
+
+1)  다른 자료형을 시계열 객체로 변환
+   - 문자열을 Timestamp로 변환 : pd.to_datetime()
+   - Timestamp를 Period로 변환 : pd.to_period()
+  시계열 데이터 생성
+   - Timestamp 배열 : pd.date_range()
+   - Period 배열 : pd.period_range()
+ 
+ 2) 시계열 데이터 활용 : 날짜 데이터 분리, 날짜 인덱스 활용: 
+    https://pandas.pydata.org/docs/user_guide/timeseries.html
+
+ 3) 시계열 데이터 생성
+   Timestamp 배열 생성 : date_range() 함수 사용
+	date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False,
+		 name=None, closed=_NoDefault.no_default, inclusive=None, **kwargs)
+   DatetimeIndex 생성
+	https://pandas.pydata.org/docs/reference/api/pandas.date_range.html
+
+    Period 배열 생성 : period_range() 함수 사용
+	period_range(start=None, end=None, periods=None, freq=None, name=None)
+   	PeriodIndex 생성
+	https://pandas.pydata.org/docs/reference/api/pandas.period_range.html
+
+ 4) 날짜 데이터 분리
+ - 연-월-일 정보를 연, 월, 일 각각으로 구분
+
+- Timestamp 객체에서 연월일 분리
+
+	Timestamp 객체는 연, 월, 일, 시, 분, 초로 추출가능
+		Series.dt.year
+		Series.dt.month
+		Series.dt.day
+		Series.dt.hour
+		Series.dt.minute
+		Series.dt.second
+
+ stock['Year'] = stock.new_date.dt.year
+ stock['Month'] = stock.new_date.dt.month
+ stock['day'] = stock.new_date.dt.day
+
+- Period 객체에서 연-월 또는 연도 추출
+
+ stock['date_year'] = stock.new_date.dt.to_period(freq='Y')
+ stock['date_month'] = stock.new_date.dt.to_period(freq='M')
+ stock['date_day'] = stock.new_date.dt.to_period(freq='D')
+
+
+- Series.str.split('-', expand=True)를 이용하여 연,월,일 컬럼으로 저장
+stock[['Year','Month','Day']] = stock.Date.str.split('-', expand=True)
+
+- Series.str.split('-')으로 분할한 후 tolist()함수를 적용하여 리스트로 변환한 후 새로운 데이터프레임으로 생성
+stock.Date.str.split('-').tolist()[:3]
+pd.DataFrame(stock.Date.str.split('-').tolist(), columns=['Year','Month','Day']).head()
+
+- Series.str.split('-')으로 분할한 결과에 apply(pd.Series)를 적용하여 데이터프레임을 생성
+stock.Date.str.split('-').apply(pd.Series)
