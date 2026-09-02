@@ -1,0 +1,120 @@
+[pandas 4일차 수업내용]
+
+1. 행/열에 동일한 연산 적용
+1) apply(함수, axis=)
+- DataFrame의 행이나 열에 복잡한 연산을 vectorizing 할 수 있게 해주는 함수
+- 매우 많이 활용되는 함수
+- 형식 : apply(반복적용할 함수, axis=0/1)
+	- 0 : 열마다 반복
+	- 1 : 행마다 반복 
+	- 생략시 기본값 : 0
+
+Series.apply(func, args=(), *, by_row='compat', **kwargs)
+DataFrame.apply(func, axis=0, raw=False, result_type=None, args=(), 
+                by_row='compat', engine=None, engine_kwargs=None, **kwargs)
+
+- 사용 목적
+	- 사용자 정의함수(User Defined Function:UDF)를 시리즈나 데이터프레임에 적용
+	- 복합 조건 처리 : 여러 컬럼을 동시에 참조하는 계산
+	- 집계 및 변환 : 그룹별계산, 열반환
+	- 비벡터화 연산 처리 : pandas 기본연산으로 처리하기 어려운 행/열 단위 로직 처리
+
+2) map() 함수
+ - apply() : 조건 기반 컬럼 생성, 여러 컬럼 조합 계산을 위해 사용
+ - map() : 단순 값 치환, 시리즈의 요소/데이터프레임의 전체 값 변환
+ - apply(), map() 모두 벡터기반연산보다는 성능은 떨어짐 : 느린 방식
+
+함수		대상 				특징 	
+map		Series				1:1 매핑, pandas 2.X에서는 Series만 사용, 3.X버전에서는 DataFrame에서도 사용
+apply		Series/DataFrame		함수 적용
+applymap	DataFrame			모든 요소에 적용, pandas 2.X까지 사용, 3.0이상에서는 depricated -> map으로 변경
+
+
+2. 열재구성 및 필터링(추출)
+1) 열 재구성  :  df[[컬럼들]] 
+      
+2) boolean indexing  : 컬럼 조건 => T/F => 
+    df.loc[df.열이름 > 조건]
+
+3) isin()
+          df.isin([ ,,, ])
+
+
+3. 데이터 합치기
+1) 연결 (concat)
+  데이터들을 (위,아래)/(좌우)로 합치기 : 단순 붙이기
+  pd.concat([df1,df2,....], axis=0(index) | 1(columns), join='inner | outer', ignore_index=True)
+
+2) 병합 (merge)
+ 공통 컬럼(인덱스) 기준으로 연결 (데이터베이스 SQL 방식)
+ pd.merge(df1, df2, how='inner | outer | left | right | cross', 
+              on='', left_on='' , right_on='',
+              left_index=True, right_index=True, suffixes=)
+ df1.merge(df2, how='inner | outer | left | right | cross', 
+              on='', left_on='' , right_on='',
+              left_index=True, right_index=True, suffixes=)
+
+3) 조인 (join)
+ merge의 특별한 경우, 인덱스를 기준으로 결합
+ df1.join(df2, how=, )
+
+[참고] 난수
+- 넘파이 np.random 모듈 
+   np.random.seed(0) : np.random.seed(int(time.time()))
+   np.random.rand() : 0~1사이의 난수
+   np.random.randint(최소값, 최대값, size=n)
+   np.random.randn() : 표준정규분포 (평균0, 분산1)
+   np.random.normal([loc, scale, size]) : 정규분포
+   np.random.choice(a, size, replace, p) : 
+- 파이썬 random 모듈
+
+4. 다중인덱스(MultiIndex)
+1) 다중인덱스를 갖는 시리즈, 데이터프레임
+
+2) 다중인덱스의 인덱싱 방식
+  - df[(상위인덱스, 하위인덱스)]
+  - df.상위인덱스
+  - df.상위인덱스.하위인덱스
+  - df.loc[(상위인덱스, 하위인덱스), ]
+  - df.iloc[(상위인덱스, 하위인덱스)]  => 다중인덱스와 상관없음
+
+3) MultiIndex 객체
+ - 다중인덱스 생성
+ - pd.MultiIndex.from_arrays()
+ - pd.MultiIndex.from_tuples()
+ - pd.MultiIndex.from_product()
+ - pd.MultiIndex.from_frame()
+
+4) 인덱스 레벨 삭제
+  droplevel(level=0, axis=0)
+
+5) 인덱스 레벨 해제 및 추가 : unstack(), stack()
+ unstack(level=-1) : 행인덱스 레벨 해제
+	행레벨 -> 열레벨 (다중인덱스 레벨 해제)
+ stack(level=-1) : 열인덱스 레벨 해제
+	열레벨 -> 행레벨 (다중인덱스 레벨 추가)
+
+6) 다중인덱스의 레벨 교환 : swaplevel()
+- 인덱스레벨 순서 변경
+- swaplevel(j=- 2, j=- 1, axis=0)
+
+7) 다중인덱스 행/열 추가
+ - 열 추가 :  df[(열이름레벨1, 레벨2)]
+ - 행 추가 :  df.loc[(행이름레벨1, 레벨2)]
+
+8) 다중인덱스 정렬
+ - 인덱스 기준 정렬 : 
+    sort_index( , axis=0,  level=None, 
+		ascending=True, inplace=True)
+
+ - 컬럼 값 기준 정렬 :
+    sort_values(by=(열이름레벨1, 레벨2), axis=0,
+		ascending=True, inplace=True)
+
+5. 데이터 파악과 조작 연습문제 풀기
+  연습문제1. 타이타닉
+  연습문제2. 로그데이터
+  연습문제3. 중복데이터 처리
+  연습문제4. 데이터 변환
+
+(~제출기한 : 주말(9/6)까지)
