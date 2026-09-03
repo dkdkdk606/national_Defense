@@ -1,0 +1,82 @@
+[pandas 2일차 수업내용]
+
+1. loc, iloc 인덱서
+1) 기본인덱싱 : 
+ 열기준 인덱싱  df[열이름], df[행이름:행이름2], df[열][행:행]
+
+2) loc
+ : 행기준 인덱싱, 이름기준  df.loc[행이름, 열이름]
+
+3) iloc
+ : 행우선 인덱싱, 정수위치  df.iloc[행위치, 열위치]
+
+2. 데이터 전처리
+- 데이터의 품질을 보장, 데이터 신뢰도를 높이고 분석 결과의 질을 높이기 위해
+
+1) 데이터 정제 : 
+ - 결측치 : 완전제거, 평균값 대체, hot-deck 대체, 회귀분석 활용 등
+ - 잡음 : 구간화(평활화), 연속형 변수 범주화
+ - 이상치 : 
+	이상치 탐지 : 시각적기법(히스토그램, 박스플롯, 산점도), IQR기반, 거리기반탐지, 분석기법
+	이상치 처리 : 제거, 대체, 변수변환(제곱,제곱근, 지수,로그 변환 등)
+ - 중복값
+
+2) 데이터 결합 : join, union => join, merge, bind
+
+3) 데이터 축소 : 
+ - 변수 selection / 변수 extraction(SVD, 주성분분석,...)
+ - 샘플링 (관측값) => 단순임의추출, 계통추출, 집락추출, 층화추출
+
+4) 데이터 변환 : 
+  - 데이터 구조 변환 :  데이터 전치, 피봇팅, 스태킹
+  - 데이터 척도변환 : 정규화(min-max), 표준화(z-score),...
+  - 데이터 분포 변환 : 비대칭->대칭 : 박스콕스, 지수, 로그, 제곱근
+  - 변수 변환 : 연속형 변수 범주화, 더미변수
+  - 데이터 정렬
+  - 파생변수, 요약변수
+  - 데이터 행/열 삭제, 행/열 이름변경, 타입변환, 인덱스 변경 등
+
+
+3. 데이터 파악
+1) EDA : 시각화, 기술통계
+   기술통계 : 위치(대표값), 산포도, 모양(왜도, 첨도) / 빈도
+   시각화 :  히스토그램,상자그림표, 파이차트, 막대그래프, 산점도, 선그래프 등
+
+2) 데이터 파악을 위한 메소드들
+   df.info()
+   df.describe(include='all', exclude=)
+   df.head(n=), df.tail(n=)
+   df.shape
+   df.ndim
+   df.dtypes
+    
+4. 데이터 조작#1
+ 1) 데이터 개수 세기 : 
+   count(), value_counts(), unique()
+   Series.count()
+   Series.value_counts(normalize=False, sort=True, ascending=False, bins=None, dropna=True)
+   Series.unique()
+   DataFrame.count(axis=0, numeric_only=False)
+   DataFrame.value_counts(subset=None, normalize=False, sort=True, ascending=False, dropna=True)
+
+2) 정렬 : sort_index(), sort_values()
+
+3) 순위 : rank()
+
+4) 집계 : 통계함수
+     sum(), mean(), std(), min(), max(), idxmin(), idxmax(),
+     median(), corr(), cov()
+
+5) 행/열 추가
+      열추가->열인덱싱 df[열이름] = 
+      행추가 -> loc인덱싱 df.loc[행이름] =
+
+6) 행/열 삭제
+    drop(labels=  , axis= , inplace=True)
+    drop(index=[ ] )
+    drop(columns=[ ])
+
+
+ 
+
+
