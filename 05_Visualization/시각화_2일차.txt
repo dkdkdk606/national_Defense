@@ -1,0 +1,244 @@
+[데이터 시각화 2일차]
+
+#1. Seaborn
+
+4. 관계 시각화
+- 변수들간의 관계 (상관, 회귀)
+
+1) relplot
+ - relplot(kind='scatter' | 'line', data=, x=, y=, row=, col= , palette=, ... )
+
+2) 산점도
+-  scatterplot(data=, x=, y=, hue=, palette=,  )
+
+3) 회귀직선 플롯
+-  regplot(data=, x=, y=, fit_reg=True,  palette=,... )
+  : 산점도 + 회귀직선
+
+4) 버블차트
+- scatterplot()의 hue, size, sizes인수를 이용
+  sns.scatterplot(data=iris, x='sepal_length', y='petal_length',
+            hue='species', size='petal_length', sizes=(20, 100))
+
+[예시코드]
+crime = pd.read_csv('data/crimeRatesByState2005.csv')
+# 살인건수(murder)와 절도건수(burglary), 주별 인구수에 대한 버블차트
+sns.set_theme(rc={'figure.figsize':(8, 8)})
+sns.scatterplot(data=crime, x='murder', y='burglary', 
+                size='population', sizes=(20, 4000),
+                hue='state', alpha=0.5,
+                legend=False)
+plt.xlim(0, 12)
+# 주 이름을 버블 위에 표시
+for i in range(0, crime.shape[0]):
+    plt.text(x=crime.murder[i], y=crime.burglary[i], s=crime.state[i], 
+             horizontalalignment='center',
+             size='small', color='dimgray')
+plt.show()
+
+5) 산점도 행렬
+ - pairplot(data, hue=None, hue_order=None, palette=None, vars=None, x_vars=None, y_vars=None, kind='scatter', diag_kind='auto', markers=None, height=2.5, aspect=1, corner=False, dropna=False, plot_kws=None, diag_kws=None, grid_kws=None, size=None)
+ - 인수 
+	kind='scatter' : 각 행렬 위치에 scatter|kde|hist 등을 표시
+	diag_kind='kde' : 각 변수별 커널밀도추정곡선 그림
+	hue='species' : 'species'(setosa, versicolor, virginica) 별로 색깔을 다르게 표시
+	색깔은 palette 에 'bright', 'pastel', 'deep', 'muted', 'colorblind', 'dark' 중에서 가독성이 좋고 선호하는 색상으로 선택
+	corner : 상감각의 산점도는 표시하지 않음
+
+ - 판다스 pandas.plotting.scatter_matrix( )
+
+5. 범주형 시각화 : 비교, 분포
+1) 목적
+ - 원시 데이터 분포 : stripplot(), swarmplot()
+ - 분포 요약 : boxplot(), violinplot(), boxenplot()
+ - 범주별 집계 : barplot(), countplot(), pointplot()
+
+2) catplot
+  catplot(kind=strip' | 'bar' | 'swarm' | 'box' | 'violin' | 'point' | 'count' ,  
+	     data=, x=, y=, hue=,row=, col=,  color=,   palette=, ... )
+
+3) 막대/빈도 그래프
+ - barplot(data=, x=, y=, hue=, order=, hue_order=, dodge='auto', orient='v'|'h', color=, palette=, ... )
+   : 집계(평균) 비교, 평균+신뢰구간(error bar)로 표시, 개수(count)가 아님
+
+ - countplot(data=, x=, y=, hue=, order=, hue_order=, dodge='auto', orient='v'|'h', color=, palette=, ) 
+   : 범주별 개수(빈도) 비교
+
+4) 박스플롯
+ - 범주별 분포 요약(5가 통계량: 최소값, Q1, 중앙값, Q3, 최대값), 이상치 탐지
+ -  boxplot(data=, x=, y=, hue=, order=, hue_order=, dodge=False, orient='v'|'h', color=, palette=, ...  )
+
+5) 바이올린 플롯
+- 박스플롯보다 분포모양 파악 가능
+- 분포 모양을 부드러운 곡선으로 표현
+-  violinplot(data=, x=, y=, hue=, order=, hue_order=, dodge=False, orient='v'|'h', color=, palette=, ... )
+
+6) 스트립 플롯
+ - 데이터 점 표시
+ - 데이터 겹침 방지를 위해 jitter 적용
+ - stripplot(data=, x=, y=, hue=, order=, hue_order=, jitter=True, dodge=False, orient='v'|'h', color=, palette=, ... )
+
+7) 스웜플롯
+ - 데이터 점 표시
+ - 데이터 겹치지 않도록 정렬
+ - 소규모 데이터 시각화
+ -  swarmplot(data=, x=, y=, hue=, order=, hue_order=, dodge=False, orient='v'|'h', color=, palette=,... )
+ 
+
+6. 추세 시각화
+ - lineplot(data=, x=, y=, hue=, size=, style= , palette=, ... )
+ - relplot(kind='line')
+
+
+7. 히트맵
+- sns.heatmap(data=, vmin=None, vmax=None, cmap=None, center=None, robust=False, annot=None, fmt='.2g', annot_kws=None, linewidths=0, linecolor='white', cbar=True, ...)
+
+ 예. sns.heatmap(flights_p, annot=True, fmt='d', annot_kws={'size':8}, cmap='RdPu')
+
+- matplotlib의 pcolor()
+
+
+8. seaborn의 스타일
+1) sns.set_style() 
+  - 'darkgrid', 'whitegrid' 
+
+2) 스타일 설정 초기화
+  plt.rcdefaults()
+
+3) 테두리 제거
+ - sns.despine(right=True,left=True,top=False,bottom=False)
+  
+
+8. 모자익 플롯
+- 범주형 변수간의 빈도 시각화
+- 보통 두 개의 범주형 변수에 대해 각 데이터 그룹의 비율을 타일의 크기로 표현하는 시각화 도구
+- 사각형 내부를 그룹별로 분할하여 타일을 배치.
+
+
+# statsmodels 설치 필요
+# !pip install statsmodels
+
+from statsmodels.graphics.mosaicplot import mosaic
+
+def props(key):
+    return {'color':'lightgreen' if '생존' in key else 'yellow'}
+
+plt.rcParams['font.family'] =' Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
+mosaic(data=titanic.sort_values('sex'),
+       index=['sex','survived'],
+       properties=props,   # tile의 색상 변경
+       axes_label = True, title='타이타익 남녀 생존율')
+plt.show()
+
+
+9. 레이터 차트
+- 다변량 데이터를 2차원에 표현하여 관측값들을 비교할 때 사용
+- 레이더 차트(radar chart)는 방사형 차트라고도 불리며 여러 변수의 값을 비교하는 데 유용한 시각화 도구
+- 변수의 수에 따라 원을 같은 간격으로 나누고, 중심으로부터 일정 간격으로 동심원을 형성하며 척도를 측정하는 축을 만듬
+- 각 변수의 정량화된 점수를 축 위에 표시하고, 해당 점들을 선으로 연결하여 다각형 모양을 형성함
+- 레이더 차트의 대표적인 활용 분야 중 하나는 여러 제품에 대한 품질 평가
+
+# plotly 설치
+# !pip install plotly
+# !pip install kaleido
+
+import matplotlib.image as mpimg
+import plotly.graph_objects as go
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def radar(df, fills, min_max, title=''):
+    fig = go.Figure()
+    categories = df.columns.to_list()
+    categories.append(categories[0])
+    i = 0
+    while (i < len(df)):
+        scores = df.iloc[i, :].to_list()
+        scores.append(scores[0])
+        fig.add_trace(go.Scatterpolar(
+            r=scores,  # 축의 값
+            theta=categories,  # 축의 레이블
+            fill=fills[i],  # 다각형 채우기 색
+            name=df.index[i]  # 다각형 레이블
+        ))
+        i += 1
+        
+        fig.update_layout(
+            polar_radialaxis_visible=True,
+            polar_radialaxis_range=min_max,  # 축의 값 범위
+            showlegend=True,
+            margin_t=50,  # 상단 여백
+            margin_l=100,  # 좌측 여백
+            margin_r=100,  # 우측 여백
+            margin_b=25,  # 하단 여백
+            width=700,  # 그래프의 폭(pixel)
+            height=700,  # 그래프의 높이(pixel)
+            title_text=title,  # 그래프 제목
+            title_font_size=30,  # 제목 폰트 사이즈
+            font_size=20  # 폰트 사이즈
+            )
+        
+    # 그래프 저장 & display
+    plt.axis('off')
+    fig.write_image('rader.png')
+    plt.imshow(mpimg.imread('rader.png'))
+    plt.show()
+
+# 예시데이터
+df = pd.DataFrame({
+    'Kor': [72, 70, 90, 60, 66],
+    'Eng': [84, 85, 95, 70, 85],
+    'Math': [71, 40, 88, 80, 75],
+    'Sci': [83, 80, 91, 90, 70],
+    'Phy': [60, 60, 60, 70, 50]
+})
+df.index = ['AVG', 'John', 'Tom', 'Smith', 'Grace']
+
+fills = [None, 'toself']
+radar(df=df.iloc[[0, 3], :],
+      fills=fills,
+      min_max=[0, 100],
+      title='Scores of Smith'
+      )
+
+fills = ['toself', 'toself', 'toself', 'toself']
+radar(df=df.iloc[1:, :],
+      fills=fills,
+      min_max=[0, 100],
+      title='Scores of Student'
+      )
+
+10. 트리맵(tree map)
+- 계층 구조를 포함하는 데이터를 2차원으로 시각화하는 도구
+- 모자이크 플롯은 데이터의 그룹을 하나의 타일로 표현하는 반면, 트리맵에서는 각 관측값이 하나의 타일로 표현
+- 트리맵에서는 타일의 색과 크기를 활용하여 서로 다른 정보를 동시에 표현할 수 있으며, 타일들은 계층 구조에 따라 배치됨
+- Plotly 라이브러리에서 트리맵을 지원
+- 트리맵 작성과 화면 출력을 위해 plotly와 webbrowser 라이브러리(패키지)를 설치해야 함
+
+import plotly.express as px
+import webbrowser
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.read_csv('data/GNI2014.csv')
+
+fig = px.treemap(data_frame=df,
+                 path=['continent', 'iso3'],  # 데이터의 계층 구조
+                 values='population',  # 타일 면적 기준 컬럼
+                 color='GNI',  # 색 온도 기준 컬럼
+                 color_continuous_scale='Bluyl'  # 컬러 팔레트
+                 )
+
+plt.axis('off')  # 축 눈금 제거
+fig.update_layout(margin_t=50, margin_l=25,  # 여백 설정
+                  margin_r=25, margin_b=25,
+                  width=800,  # 그래프의 폭(pixel)
+                  height=600,  # 그래프의 높이(pixel)
+                  title_text='GNI 2014',  # 그래프 제목
+                  title_font_size=20  # 제목 폰트 크기
+                  )
+
+# 그래프 저장 & 화면에 표시하기
+fig.write_html('treemap.html')  # html 파일로 결과 저장
+webbrowser.open('treemap.html')  # 웹 브라우저에서 그래프 확인

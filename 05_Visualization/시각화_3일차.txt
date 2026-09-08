@@ -1,0 +1,260 @@
+[데이터 시각화 3일차]
+
+
+folium을 이용한 지도시각화
+
+1. 지도 객체 생성 
+
+1)  foilum.Map( )
+: 지도 객체 인수들
+
+인수 이름 : 기본값 : 설명
+-------------------------------
+location :	 [0, 0] : 지도 중심 좌표를 지정하는 (위도, 경도) 리스트나 튜플.
+width :	 	 '100%' : 지도의 가로 크기. (px, %, 등 가능)
+height :	 '100%' : 지도의 세로 크기. (px, %, 등 가능)
+zoom_start :	 10 : 시작할 때의 줌 레벨 (숫자가 클수록 확대)
+control_scale : False : True면 지도에 거리 축척(스케일 바)을 표시
+tiles :		 'OpenStreetMap' : 지도 배경 타일 스타일. 
+			(예: "Stamen Terrain", "CartoDB positron", "Stamen Toner" 등)
+attr : 		 None : 사용자 지정 타일 서버를 쓸 때 출처 표시 문구.
+min_zoom :	 0 : 허용되는 최소 줌 레벨
+max_zoom : 	 18 : 허용되는 최대 줌 레벨
+max_bounds :  False : True면 사용자가 지도를 중심 경계밖으로 스크롤할 수 없음.
+crs :		 'EPSG3857' : 좌표계 설정. (주로 'EPSG3857', 'EPSG4326' 사용)
+prefer_canvas : False : 성능 향상을 위해 캔버스 렌더링을 우선 사용할지 여부
+no_touch : False : 터치 이벤트를 막을지 여부
+disable_3d : False : 3D 파노라마와 같은 효과를 비활성화할지 여부
+
+2)  지도 저장
+lat, lon = 37.58069236117438, 126.97485247697063  # 경복궁
+m = folium.Map(location=[lat, lon], zoom_start=16)
+m.save('경복궁.html')
+
+참고. 저장된 지도 열기
+import webbrowser
+webbrowser.open('경복궁.html')
+
+2. 지도 타일
+1) 기본 지도 타일 
+:  Map()의 tiles인수 사용
+	'OpenStreetMap' 이 기본값
+	'CartoDB positron'
+	'CartoDB Voyager'
+	'CartoDB dark_matter'
+	'NASAGIBS Blue Marble'
+	'Stamen Terrain' : 산악 지형이 선명하게 보임
+	'Stamen Toner' : 흑백 스타일로 도로망 강조
+	그외 customized tile 사용 가능
+
+2) 지도 타일 지정 메소드 : TileLayer()
+folium.raster_layers.TileLayer(tiles: str | TileProvider = 'OpenStreetMap', min_zoom: int = 0, max_zoom: int = 18, max_native_zoom: int | None = None, attr: str | None = None, detect_retina: bool = False, name: str | None = None, overlay: bool = False, control: bool = True, show: bool = True, no_wrap: bool = False, subdomains: str = 'abc', tms: bool = False, opacity: float = 1, **kwargs)
+
+3) 지도맵에 스타일 지정 :
+  folium.TileLayer(tiles=tiles).add_to(m)
+
+4) 커스텀 지도타일
+
+#1 : 국토부 제공 VWorld
+    타일종류 / 타일 타입
+	Base / png
+	gray / png
+	midnight / png
+	Hybrid / png
+	Satellite / jpeg
+
+ [코드 예]
+  vworld_key = VWorld 사이트에서 발급받은 인증키
+  layer = 'Base'
+  tile_type = 'png'
+  tiles_url = f'http://api.vworld.kr/req/wmts/1.0.0/{vworld_key}/{layer}/{{z}}/{{y}}/{{x}}.{tile_type}'
+  attr = 'VWorld'
+
+#2. 구글 지도
+	Standard Road Map : m
+	Terran Map : p
+	Somehow Altered Road Map : r
+	Satellite Map : s
+	Terran Only : t
+	Hybrid : y
+	Roads Only : h
+[코드예]
+  layer = 'm'
+  tiles = f"http://mt0.google.com/vt/lyrs={layer}&hl=ko&x={{x}}&y={{y}}&z={{z}}"
+  attr = "Google"
+
+
+3. 마커(Marker)
+
+1) 지도에 마커 생성하고 부착/표시하기
+
+단계1. 마커 생성
+   folium.Marker(location=[위도,경도], popup='', 
+		tooltip='', icon=아이콘객체)
+	popup : 마커 클릭 시 표시되는 문구(환경에 따라 지원 안되는 경우도 있음)
+	tooltip : 마우스 hover시 표기되는 문구
+	icon : Marker 형태 결정(기본값 : information icon)
+
+단계2. 마커 아이콘 생성
+    folium.Icon(color='색상', icon='아이콘 모양')
+	
+색상 : {'orange', 'lightblue', 'white', 'darkblue', 
+	'darkpurple', 'gray', 'black',
+	 'darkred', 'red', 'pink', 'darkgreen',
+	'blue', 'green', 'cadetblue', 'lightgray',
+	 'beige', 'lightgreen', 'purple', 'lightred'} 중에서 사용
+
+단계3. 마커 생성 후 부착
+     folium.Marker().add_to(지도객체변수)
+
+## Icon 객체에서 사용가능한 colors
+ ‘red’, ‘blue’, ‘green’, ‘purple’, ‘orange’, ‘darkred’,
+ ’lightred’, ‘beige’, ‘darkblue’, ‘darkgreen’, ‘cadetblue’,
+ ‘darkpurple’, ‘white’, ‘pink’, ‘lightblue’, ‘lightgreen’, ‘gray’, ‘black’, ‘lightgray’
+
+
+2) 커스텀 아이콘
+: icon 인수 prefix : fa, glyphicon
+- prefix='fa' 옵션을 선택할 때 icon 선택하는 사이트
+    - https://fontawesome.com/
+
+- prefix = 'glyphicon' 옵션을 선택할 때 icon 선택하는 사이트
+     - 'glyphicon'이 기본값
+    - https://getbootstrap.com/docs/3.3/components/
+
+[자주 사용하는 아이콘 이름]
+# fa
+ "home", "building", "map-marker", "map-pin", "location-arrow",  "crosshairs",
+ "flag",  "star", "heart", "bookmark", "user", "users", "car", "taxi", "bus", "subway",
+ "train", "plane", "bicycle", "truck", "coffee", "cutlery", "shopping-cart", "credit-card",
+ "hospital-o", "ambulance", "graduation-cap", "camera", "shield", "exclamation-triangle" 
+
+# glyphicon
+"home",  "user", "star",  "heart",  "flag",  "map-marker",  "search", "envelope", "phone",
+"camera", "picture", "book", "calendar", "shopping-cart", "info-sign", "warning-sign",
+"ok", "remove", "plus", "minus" 
+
+4. Circle객체, CircleMarker객체
+
+folium.Circle(location=[lat, lon],
+              radius=100, # 원 크기
+              color='red', # 원 선 색상
+              fill_color='blue', # 원 내부 색상
+              popup='Circle popup',
+              tooltip='Circle tooltip'
+             ).add_to(m)
+
+folium.CircleMarker([lat, lon],
+                    radius=50,
+                    fill=True,
+                    color='#34ebc6',
+                    fill_color='#c634eb',
+                    popup='CircleMarker popup',
+                    tooltip='CircleMarker tooltip'
+                   ).add_to(m)
+
+5. MarkerCluster()
+
+from folium.plugins import MarkerCluster
+
+marker_cluster = MarkerCluster().add_to(지도객체)
+마커객체.add_to(marker_cluster)
+
+
+6. folium.GeoJson()을 할용한 경계 표현
+
+GeoJson : 행정구역과 같은 경계선이나 경로를 표현하는데 효율적
+
+1) geojson 또는 json 파일 일기
+
+import json
+
+[방법1]
+with open('json파일경로', encoding='utf-8') as f:
+    geo = json.loads(f.read())
+
+json.loads() : 읽은 json 파일을 딕셔너리로 저장 반환
+
+* 'features'키의 'properties'키들의 정보를 데이터프레임으로 저장하는 함수 
+def geojson_to_df(geo_json):
+    geo_prpty = [dong['properties'] for dong in geo_json['features']]
+    df = pd.DataFrame(geo_prpty)
+    return df
+
+df_prt = geojson_to_df(geo_ggi)
+
+[방법2]
+df = pd.read_json('json파일경로', encoding='utf-8')
+=> json 파일을 읽어 데이터프레임으로 저장하여 반환
+  컬럼은 json의 최상위 키값들
+
+2) 지도 경계 시각화
+
+# 지도 객체 생성
+m = folium.Map(location = (37.566585446882, 126.978203640984),
+               zoom_start=8)
+
+# GeoJson()으로 지도경계 맵에 그리기
+folium.GeoJson(json딕셔너리객체).add_to(m)
+
+
+7. 단계 구분도(Choropleth Map)
+
+1) 단계 구분도란?
+- 행정구역 등과 같이 지도상의 어떤 경계로 구분된 지도 영역에 색을 칠하거나 음영 등을 넣어 정보를 나타낸 지도
+데이터를 지도 그림에 반영시켜서 전달하는 그래프
+
+2) Map객체의 Choropleth()
+
+- Choropleth를 활용하여 GeoJson 데이터와 결합
+- Choropleth : 행정구역별로 다른 색상을 표현
+	보통 folium에 layer로 얹게 됨
+
+- 사용 인수
+	geo_data : 지도 파일 경로와 파일명
+	data : 지도에 표현되어야 할 값 변수
+	columns = [key로 사용할 data, 실제 data의 필드명]
+	key_on : 지도 경계파일인 json에서 사용할 키 값
+		 지도 Data는 표준 형식으로 만들어 져야 함
+		반드시 feature.로 시작
+		feature(키워드).json에서 나타나키 필드명
+
+- 단계구분도를 map에 표시하는 함수
+     folium.LayerControl().add_to(map)
+
+3) 단계구분도 작성 단계
+
+단계1. Map()객체 생성
+ m = folium.Map(location = (37.566585446882, 126.978203640984),
+                zoom_start=8)
+
+단계2. GeoJson() 객체로 경계선 Map()객체에 붙이기
+ folium.GeoJson(geo_gg).add_to(m)
+
+단계3. Choropleth() 객체 생성 후 Map()객체에 붙이기
+
+(방법1) geojson의 properties.name 속성과 데이터프레임의 인덱스를 기준으로 사용할 경우
+ folium.Choropleth(geo_data=geo_gg,
+                   data=gg_pop[2007],
+                   columns=[gg_pop.index, gg_pop[2007]],
+                   key_on='feature.properties.name',
+                   fill_color='YlGn',
+                   fill_opacity=0.7,
+                   line_opacity=0.3,
+                   legend_name='Gyeonggi population in 2017',
+                   threshold_scale=[10000, 100000, 300000, 500000, 700000]
+                ).add_to(m)
+
+
+(방법2) geojson의 properties.name 속성과 데이터프레임의 한 컬럼을 기준으로 사용할 경우
+
+ folium.Choropleth(geo_data=geo_gg,
+                   data=gg_pop,
+                   columns=['구분', 2007],
+                   key_on='feature.properties.name',
+                   fill_color='YlGn',
+                   fill_opacity=0.7,
+                   line_opacity=0.3,
+                   legend_name='Gyeonggi population in 2007',
+                   threshold_scale=[10000, 100000, 300000, 500000, 700000]
+                ).add_to(m)
